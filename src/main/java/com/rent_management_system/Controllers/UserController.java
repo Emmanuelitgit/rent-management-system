@@ -33,9 +33,6 @@ public class UserController {
         if (result.hasErrors()){
             throw  new InvalidDataException("Invalid data");
         }
-        if (user == null){
-            throw new NotFoundException("No data provided");
-        }
         UserDTO userData = userService.createUser(user);
         return ResponseHandler.responseBuilder("user added successfully", userData, HttpStatus.CREATED);
     }
@@ -44,9 +41,6 @@ public class UserController {
     public ResponseEntity<Object> getUsers(){
         List<UserDTO> userDTOList = userService.getUsers();
         log.info("In fetch users method:==========");
-        if (userDTOList.isEmpty()){
-            throw new NotFoundException("No data found");
-        }
         return ResponseHandler.responseBuilder("User details", userDTOList, HttpStatus.OK);
     }
 }

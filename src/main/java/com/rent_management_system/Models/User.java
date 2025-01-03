@@ -27,6 +27,9 @@ public class User {
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email provided")
     public String email;
+    @Column(columnDefinition = "varchar(255) default 'USER'")
+    @NotBlank(message = "Role is required")
+    public String role;
     @Column
     @NotBlank(message = "Password is required")
     public String password;

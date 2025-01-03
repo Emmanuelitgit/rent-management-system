@@ -2,6 +2,7 @@ package com.rent_management_system.ServiceImp;
 
 import com.rent_management_system.DTO.UserDTO;
 import com.rent_management_system.DTOMappers.UserDTOMapper;
+import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.Models.User;
 import com.rent_management_system.Repositories.UserRepository;
 import com.rent_management_system.ServiceInterface.UserInterface;
@@ -26,7 +27,11 @@ public class UserService implements UserInterface {
 
     @Override
     public UserDTO createUser(User user) {
+        if (user == null){
+            throw new NotFoundException("No data provided");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(user.getRole().toUpperCase());
         userRepository.save(user);
         return UserDTOMapper.toDTO(user);
     }
@@ -34,6 +39,9 @@ public class UserService implements UserInterface {
     @Override
     public List<UserDTO> getUsers() {
         List<User> users = userRepository.findAll();
+        if (users.isEmpty()){
+            throw new NotFoundException("No data found");
+        }
         return userDTOMapper.userDTOList(users);
     }
 }
