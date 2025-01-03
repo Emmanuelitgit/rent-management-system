@@ -2,10 +2,12 @@ package com.rent_management_system.DTOMappers;
 
 import com.rent_management_system.DTO.UserDTO;
 import com.rent_management_system.Models.User;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class UserDTOMapper {
 
     public static UserDTO toDTO(User user){

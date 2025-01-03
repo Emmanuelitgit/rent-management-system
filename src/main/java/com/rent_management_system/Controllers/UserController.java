@@ -12,10 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -30,14 +29,24 @@ public class UserController {
 
     @PostMapping("/create-user")
     public ResponseEntity<Object> createUser(@RequestBody @Valid User user, BindingResult result){
+        log.info("In create user method:=========");
         if (result.hasErrors()){
             throw  new InvalidDataException("Invalid data");
         }
         if (user == null){
             throw new NotFoundException("No data provided");
         }
-        log.info("In create user method:=========");
         UserDTO userData = userService.createUser(user);
         return ResponseHandler.responseBuilder("user added successfully", userData, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<Object> getUsers(){
+        List<UserDTO> userDTOList = userService.getUsers();
+        log.info("In fetch users method:==========");
+        if (userDTOList.isEmpty()){
+            throw new NotFoundException("No data found");
+        }
+        return ResponseHandler.responseBuilder("User details", userDTOList, HttpStatus.OK);
     }
 }
