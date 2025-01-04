@@ -4,6 +4,7 @@ import com.rent_management_system.DTO.UserDTO;
 import com.rent_management_system.Exception.InvalidDataException;
 import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.Models.User;
+import com.rent_management_system.Repositories.UserRepository;
 import com.rent_management_system.Response.ResponseHandler;
 import com.rent_management_system.ServiceImp.UserService;
 import jakarta.validation.Valid;
@@ -16,16 +17,19 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequestMapping("/api")
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/create-user")
@@ -33,6 +37,10 @@ public class UserController {
         log.info("In create user method:=========");
         if (result.hasErrors()){
             throw  new InvalidDataException("Invalid data");
+        }
+        Optional<User> userOptional = userRepository.findUserByEmail(user.getEmail());
+        if (userOptional.isPresent()){
+            throw new InvalidDataException("Üser Already exist");
         }
         UserDTO userData = userService.createUser(user);
         return ResponseHandler.responseBuilder("user added successfully", userData, HttpStatus.CREATED);
