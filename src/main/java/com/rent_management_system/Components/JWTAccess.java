@@ -1,6 +1,9 @@
 package com.rent_management_system.Components;
 
+import com.rent_management_system.Exception.InvalidDataException;
+import com.rent_management_system.Exception.UnAuthorizedException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -31,12 +34,17 @@ public class JWTAccess {
                 .compact();
     }
 
-    public Claims getClaims(String token){
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    public Claims getClaims(String token) {
+       try{
+           return Jwts.parserBuilder()
+                   .setSigningKey(secretKey())
+                   .build()
+                   .parseClaimsJws(token)
+                   .getBody();
+       } catch (ExpiredJwtException e) {
+           throw new UnAuthorizedException("Invalid token");
+       }
+
     }
 
     public String extractUsername(String token){

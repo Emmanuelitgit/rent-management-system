@@ -1,6 +1,7 @@
 package com.rent_management_system.Configurations;
 
 import com.rent_management_system.Exception.NotFoundException;
+import com.rent_management_system.Exception.UnAuthorizedException;
 import com.rent_management_system.Models.User;
 import com.rent_management_system.Repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class UserDetailsService implements org.springframework.security.core.use
                     .roles(getRoles(userData))
                     .build();
         } else {
-            throw new NotFoundException("Username or password incorrect");
+            throw new UnAuthorizedException("Username or password incorrect");
         }
     }
 

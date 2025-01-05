@@ -3,8 +3,9 @@ package com.rent_management_system.Exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundException.class)
@@ -27,5 +28,16 @@ public class ExceptionHandler {
         );
 
         return new ResponseEntity(exception, HttpStatus.BAD_REQUEST);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<InvalidDataException> handleUnAuthorizedException(UnAuthorizedException unAuthorizedException){
+        Exception exception = new Exception(
+                unAuthorizedException.getMessage(),
+                unAuthorizedException.getCause(),
+                HttpStatus.UNAUTHORIZED
+        );
+
+        return new ResponseEntity(exception, HttpStatus.UNAUTHORIZED);
     }
 }
