@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class JWTAccess {
 
     String SECRET = "RKUGLRKBKBSKLGSFIJSBKFBKJSDJBVugdtyidvctyfktvgkuyrcggchvrydtxtxuvyvgghghhhjhkjkjjurtyvkgvK";
-    long MINUTES = TimeUnit.MINUTES.toMinutes(30);
+    long MINUTES = TimeUnit.MINUTES.toMillis(30);
 
     public String generateToken(String username){
         Map<String, Object> claims = new HashMap<>();
@@ -35,7 +35,7 @@ public class JWTAccess {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey())
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
 

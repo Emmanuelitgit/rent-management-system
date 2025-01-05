@@ -1,5 +1,6 @@
 package com.rent_management_system.Configurations;
 
+import com.rent_management_system.Filters.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,16 +14,19 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfigurations {
 
     private final UserDetailsService userDetailsService;
+    private final JWTAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
-    public SecurityConfigurations(UserDetailsService userDetailsService) {
+    public SecurityConfigurations(UserDetailsService userDetailsService, JWTAuthenticationFilter jwtAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -31,18 +35,10 @@ public class SecurityConfigurations {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry->{
                     registry
-                            .requestMatchers("/api/create-user", "/api/users", "/api/authenticate").permitAll();
+                            .requestMatchers("/api/create-user", "/api/authenticate").permitAll()
+                            .anyRequest().authenticated();
                 })
-                .sessionManagement(httpSecuritySessionManagementConfigurer -> {
-                    httpSecuritySessionManagementConfigurer
-                            .maximumSessions(10)
-                            .maxSessionsPreventsLogin(false);
-                })
-                .formLogin(login->{
-                    login
-                            .defaultSuccessUrl("/api/users")
-                            .permitAll();
-                })
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
