@@ -1,5 +1,6 @@
 package com.rent_management_system.Exception;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -10,12 +11,29 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @RestControllerAdvice
 public class ExceptionHandler extends ResponseEntityExceptionHandler{
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        return super.handleMethodArgumentNotValid(ex, headers, status, request);
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        Map<String, Object> objectBody = new HashMap<>();
+        objectBody.put("Current Timestamp", new Date());
+        objectBody.put("Status", status.value());
+
+        // Get all errors
+        List<String> exceptionalErrors
+                = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.toList());
+
+        objectBody.put("Errors", exceptionalErrors);
+
+        return new ResponseEntity<>(objectBody, status);
     }
 
 
@@ -26,7 +44,6 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler{
                 notFoundException.getCause(),
                 HttpStatus.BAD_REQUEST
         );
-
         return new ResponseEntity<>(exception, HttpStatus.NOT_FOUND);
     }
 
@@ -37,7 +54,6 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler{
                 invalidDataException.getCause(),
                 HttpStatus.BAD_REQUEST
         );
-
         return new ResponseEntity(exception, HttpStatus.BAD_REQUEST);
     }
 
@@ -48,7 +64,6 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler{
                 unAuthorizedException.getCause(),
                 HttpStatus.UNAUTHORIZED
         );
-
         return new ResponseEntity(exception, HttpStatus.UNAUTHORIZED);
     }
 }

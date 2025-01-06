@@ -33,16 +33,14 @@ public class UserController {
     }
 
     @PostMapping("/create-user")
-    public ResponseEntity<Object> createUser(@RequestBody @Valid User user, BindingResult result){
+    public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
         log.info("In create user method:=========");
-        if (result.hasErrors()){
-            throw  new InvalidDataException("Invalid data");
-        }
         Optional<User> userOptional = userRepository.findUserByEmail(user.getEmail());
         if (userOptional.isPresent()){
             throw new InvalidDataException("Üser Already exist");
         }
         UserDTO userData = userService.createUser(user);
+        log.info("New user created successfully:=========");
         return ResponseHandler.responseBuilder("user added successfully", userData, HttpStatus.CREATED);
     }
 

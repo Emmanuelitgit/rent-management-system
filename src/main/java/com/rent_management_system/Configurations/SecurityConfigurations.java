@@ -40,7 +40,7 @@ public class SecurityConfigurations {
                 .cors(c -> c.configurationSource(corsConfiguration))
                 .authorizeHttpRequests(registry->{
                     registry
-                            .requestMatchers("/api/create-user", "/api/authenticate").permitAll()
+                            .requestMatchers("/api/create-user", "/api/authenticate", "/api/verify-email").permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
