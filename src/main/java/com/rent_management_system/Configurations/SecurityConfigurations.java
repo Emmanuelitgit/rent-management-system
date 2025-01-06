@@ -24,25 +24,21 @@ public class SecurityConfigurations {
 
     private final UserDetailsService userDetailsService;
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
+    private final CorsConfiguration corsConfiguration;
 
     @Autowired
-    public SecurityConfigurations(UserDetailsService userDetailsService, JWTAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfigurations(UserDetailsService userDetailsService, JWTAuthenticationFilter jwtAuthenticationFilter, CorsConfiguration corsConfiguration) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.corsConfiguration = corsConfiguration;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(request -> {
-                    var config = new org.springframework.web.cors.CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3000")); // Frontend origin
-                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    config.setAllowedHeaders(List.of("*"));
-                    config.setAllowCredentials(true);
-                    return config;
-                }))                .authorizeHttpRequests(registry->{
+                .cors(c -> c.configurationSource(corsConfiguration))
+                .authorizeHttpRequests(registry->{
                     registry
                             .requestMatchers("/api/create-user", "/api/authenticate").permitAll()
                             .anyRequest().authenticated();
