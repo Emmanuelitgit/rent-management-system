@@ -11,13 +11,13 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class ExceptionHandler extends ResponseEntityExceptionHandler {
-
+public class ExceptionHandler extends ResponseEntityExceptionHandler{
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         return super.handleMethodArgumentNotValid(ex, headers, status, request);
     }
+
 
     @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Exception> handleNotFoundException(NotFoundException notFoundException){
