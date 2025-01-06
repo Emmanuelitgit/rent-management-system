@@ -35,10 +35,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String authHeader = request.getHeader("Authorization");
-            if (authHeader == null){
-                throw new NotFoundException("No token found");
-            }
-            if (authHeader.startsWith("Bearer ")) {
+//            if (authHeader == null){
+//                throw new NotFoundException("No token found");
+//            }
+            if (authHeader !=null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
                 String username = jwtAccess.extractUsername(token);
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
