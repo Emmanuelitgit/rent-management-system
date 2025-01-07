@@ -1,19 +1,15 @@
-package com.rent_management_system.Controllers;
+package com.rent_management_system.User;
 
-import com.rent_management_system.DTO.UserDTO;
 import com.rent_management_system.Exception.InvalidDataException;
-import com.rent_management_system.Exception.NotFoundException;
-import com.rent_management_system.Models.User;
-import com.rent_management_system.Repositories.UserRepository;
+import com.rent_management_system.OTP.OTP;
+import com.rent_management_system.OTP.OTPRepository;
 import com.rent_management_system.Response.ResponseHandler;
-import com.rent_management_system.ServiceImp.UserService;
+import com.rent_management_system.OTP.OTPService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,11 +21,15 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
+    private final OTPRepository otpRepository;
+    private final OTPService otpVerificationService;
 
     @Autowired
-    public UserController(UserService userService, UserRepository userRepository) {
+    public UserController(UserService userService, UserRepository userRepository, OTPRepository otpRepository, OTPService otpVerificationService) {
         this.userService = userService;
         this.userRepository = userRepository;
+        this.otpRepository = otpRepository;
+        this.otpVerificationService = otpVerificationService;
     }
 
     @PostMapping("/create-user")
@@ -49,5 +49,17 @@ public class UserController {
         List<UserDTO> userDTOList = userService.getUsers();
         log.info("In fetch users method:==========");
         return ResponseHandler.responseBuilder("User details", userDTOList, HttpStatus.OK);
+    }
+
+//    @DeleteMapping("/remove-otp/{id}")
+//    public ResponseEntity<Object> removeOTP(@PathVariable Long id){
+//        otpVerificationService.removeOTPByUserId(id);
+//        return ResponseHandler.responseBuilder("deleted", null, HttpStatus.OK);
+//    }
+
+    @GetMapping("/otp")
+    public ResponseEntity<Object> getOTPs(){
+        List<OTP> otp = otpRepository.findAll();
+        return ResponseHandler.responseBuilder("otps", otp, HttpStatus.OK);
     }
 }

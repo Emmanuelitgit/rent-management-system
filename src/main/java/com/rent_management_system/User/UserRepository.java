@@ -1,6 +1,5 @@
-package com.rent_management_system.Repositories;
+package com.rent_management_system.User;
 
-import com.rent_management_system.Models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

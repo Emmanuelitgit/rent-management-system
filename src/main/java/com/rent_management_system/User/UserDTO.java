@@ -1,4 +1,4 @@
-package com.rent_management_system.DTO;
+package com.rent_management_system.User;
 
 import lombok.*;
 import org.springframework.stereotype.Component;

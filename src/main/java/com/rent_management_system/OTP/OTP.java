@@ -1,5 +1,6 @@
-package com.rent_management_system.Models;
+package com.rent_management_system.OTP;
 
+import com.rent_management_system.User.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "otp_tb")
-public class OTPVerification {
+public class OTP {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long id;
@@ -24,5 +25,5 @@ public class OTPVerification {
     public boolean status;
     @OneToOne
     @JoinColumn(name = "user_id")
-    public User user;
+    private User user;
 }

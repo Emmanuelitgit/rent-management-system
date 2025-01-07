@@ -1,9 +1,8 @@
 package com.rent_management_system.Configurations;
 
-import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.Exception.UnAuthorizedException;
-import com.rent_management_system.Models.User;
-import com.rent_management_system.Repositories.UserRepository;
+import com.rent_management_system.User.User;
+import com.rent_management_system.User.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

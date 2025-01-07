@@ -1,5 +1,7 @@
-package com.rent_management_system.Models;
+package com.rent_management_system.User;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rent_management_system.OTP.OTP;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -32,6 +34,7 @@ public class User {
     @Column
     @NotBlank(message = "Password is required")
     public String password;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    public OTPVerification otpVerification;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private OTP otp;
 }

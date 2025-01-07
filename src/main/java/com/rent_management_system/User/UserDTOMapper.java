@@ -1,7 +1,5 @@
-package com.rent_management_system.DTOMappers;
+package com.rent_management_system.User;
 
-import com.rent_management_system.DTO.UserDTO;
-import com.rent_management_system.Models.User;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
