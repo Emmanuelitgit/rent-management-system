@@ -37,6 +37,15 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler{
         return new ResponseEntity<>(objectBody, status);
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Incorrect password");
+        response.put("Throwable", null);
+        response.put("httpStatus", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Exception> handleNotFoundException(NotFoundException notFoundException){
         Exception exception = new Exception(
