@@ -1,6 +1,7 @@
 package com.rent_management_system.Exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

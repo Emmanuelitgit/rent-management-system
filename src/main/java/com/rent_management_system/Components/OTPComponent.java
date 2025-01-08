@@ -86,7 +86,7 @@ public class OTPComponent {
     public void verifyUserOTPStatusDuringLogin(String email){
         Optional<User> userOptional = userRepository.findUserByEmail(email);
         if (userOptional.isEmpty()){
-            throw new NotFoundException("User email not found to send otp");
+            throw new NotFoundException("User data not found");
         }
         User user = userOptional.get();
         Optional<OTP> verificationOptional = otpRepository.findOTPVerificationByUser_Id(user.getId());

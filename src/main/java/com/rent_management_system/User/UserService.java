@@ -44,6 +44,15 @@ public class UserService implements UserInterface {
     }
 
     @Override
+    public List<UserDTO> getUsers() {
+        List<User> users = userRepository.findAll();
+        if (users.isEmpty()){
+            throw new NotFoundException("No data found");
+        }
+        return userDTOMapper.userDTOList(users);
+    }
+
+    @Override
     public UserDTO createUser(User user) {
         Optional<User> userOptional = userRepository.findUserByEmail(user.getEmail());
         if (userOptional.isPresent()){
@@ -61,12 +70,35 @@ public class UserService implements UserInterface {
        throw new InvalidDataException("invalid email");
     }
 
-    @Override
-    public List<UserDTO> getUsers() {
-        List<User> users = userRepository.findAll();
-        if (users.isEmpty()){
-            throw new NotFoundException("No data found");
+    public UserDTO getUserById(Long id){
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()){
+            throw new NotFoundException("User not found");
         }
-        return userDTOMapper.userDTOList(users);
+        return UserDTOMapper.toDTO(user.get());
+    }
+
+    public UserDTO updateUserById(Long id, User user){
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()){
+            throw new NotFoundException("User not found");
+        }
+        User existingUser = userOptional.get();
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setFirstName(user.getFirstName());
+        existingUser.setLastName(user.getLastName());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setRole(user.getRole());
+
+        return UserDTOMapper.toDTO(existingUser);
+    }
+
+    public void removeUserById(Long id){
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()){
+            throw new NotFoundException("User not found ");
+        }
+        userRepository.deleteById(id);
     }
 }

@@ -23,6 +23,14 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+
+    @GetMapping("/users")
+    public ResponseEntity<Object> getUsers(){
+        List<UserDTO> userDTOList = userService.getUsers();
+        log.info("In fetch users method:==========");
+        return ResponseHandler.responseBuilder("User details", userDTOList, HttpStatus.OK);
+    }
+
     @PostMapping("/create-user")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
         log.info("In create user method:=========");
@@ -31,11 +39,22 @@ public class UserController {
         return ResponseHandler.responseBuilder("user added successfully", userData, HttpStatus.CREATED);
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<Object> getUsers(){
-        List<UserDTO> userDTOList = userService.getUsers();
-        log.info("In fetch users method:==========");
-        return ResponseHandler.responseBuilder("User details", userDTOList, HttpStatus.OK);
+    @GetMapping("/user/{id}")
+    public ResponseEntity<Object> getUserById(@PathVariable Long id){
+        UserDTO userDTO = userService.getUserById(id);
+        return ResponseHandler.responseBuilder("User details", userDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/remove-user/{id}")
+    public ResponseEntity<Object> removeUserById(@PathVariable Long id){
+        userService.removeUserById(id);
+        return ResponseHandler.responseBuilder("User deleted successfully", null, HttpStatus.OK);
+    }
+
+    @PutMapping("/update-user/{id}")
+    public ResponseEntity<Object> updateUserById(@PathVariable Long id, User user){
+        UserDTO userDTO = userService.updateUserById(id, user);
+        return ResponseHandler.responseBuilder("User updated successfully", userDTO, HttpStatus.OK);
     }
 
 }

@@ -40,7 +40,7 @@ public class SecurityConfigurations {
                 .cors(c -> c.configurationSource(corsConfiguration))
                 .authorizeHttpRequests(registry->{
                     registry
-                            .requestMatchers("/api/create-user", "/api/authenticate", "/api/verify-email").permitAll()
+                            .requestMatchers("/api/create-user", "/api/authenticate", "/api/verify-email", "/api/user/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
