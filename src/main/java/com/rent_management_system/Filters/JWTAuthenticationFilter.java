@@ -35,9 +35,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String authHeader = request.getHeader("Authorization");
-//            if (authHeader == null){
-//                throw new NotFoundException("No token found");
-//            }
             if (authHeader !=null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
                 String username = jwtAccess.extractUsername(token);
@@ -50,11 +47,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     } else {
-                        throw new InvalidDataException("Token is invalid or expired.");
+                        throw new UnAuthorizedException("Invalid token or signature ");
                     }
                 }
             }
-        } catch (UnAuthorizedException | NotFoundException | InvalidDataException ex) {
+        } catch (UnAuthorizedException ex) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + ex.getMessage() + "\"}");

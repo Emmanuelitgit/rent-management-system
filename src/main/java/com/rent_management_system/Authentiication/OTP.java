@@ -1,4 +1,4 @@
-package com.rent_management_system.OTP;
+package com.rent_management_system.Authentiication;
 
 import com.rent_management_system.User.User;
 import jakarta.persistence.*;
@@ -18,7 +18,7 @@ public class OTP {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long id;
     @Column
-    public int otp;
+    public Long otp;
     @Column
     public Date createdAt;
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")

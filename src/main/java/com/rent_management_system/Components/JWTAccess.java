@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class JWTAccess {
 
     String SECRET = "RKUGLRKBKBSKLGSFIJSBKFBKJSDJBVugdtyidvctyfktvgkuyrcggchvrydtxtxuvyvgghghhhjhkjkjjurtyvkgvK";
-    long MINUTES = TimeUnit.MINUTES.toMillis(30);
+    long MINUTES = TimeUnit.MINUTES.toMillis(1);
 
     public String generateToken(String username){
         Map<String, Object> claims = new HashMap<>();
@@ -41,10 +42,9 @@ public class JWTAccess {
                    .build()
                    .parseClaimsJws(token)
                    .getBody();
-       } catch (ExpiredJwtException e) {
-           throw new UnAuthorizedException("Invalid token");
+       } catch (SignatureException | ExpiredJwtException e) {
+           throw new UnAuthorizedException("Invalid token or signature");
        }
-
     }
 
     public String extractUsername(String token){

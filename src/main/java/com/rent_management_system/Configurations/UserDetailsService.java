@@ -23,7 +23,7 @@ public class UserDetailsService implements org.springframework.security.core.use
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
         Optional<User> user = userRepository.findUserByEmail(username);
         if (user.isPresent()){
             User userData = user.get();
@@ -33,7 +33,7 @@ public class UserDetailsService implements org.springframework.security.core.use
                     .roles(getRoles(userData))
                     .build();
         } else {
-            throw new UnAuthorizedException("Username or password incorrect");
+            throw new UnAuthorizedException("Username not found");
         }
     }
 

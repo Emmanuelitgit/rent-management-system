@@ -1,9 +1,10 @@
 package com.rent_management_system.User;
 
+import com.rent_management_system.Components.OTPComponent;
 import com.rent_management_system.Exception.InvalidDataException;
 import com.rent_management_system.Exception.NotFoundException;
-import com.rent_management_system.OTP.OTP;
-import com.rent_management_system.OTP.OTPService;
+import com.rent_management_system.Authentiication.OTP;
+import com.rent_management_system.Authentiication.OTPService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,40 +13,47 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
 public class UserService implements UserInterface {
-    private final long MINUTES = TimeUnit.MINUTES.toMillis(10);
+    private final long MINUTES = TimeUnit.MINUTES.toMillis(5);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserDTOMapper userDTOMapper;
     private final OTPService otpVerificationService;
-    private final com.rent_management_system.Components.OTP otp;
+    private final OTPComponent otpComponent;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserDTOMapper userDTOMapper, OTPService otpVerificationService, com.rent_management_system.Components.OTP otp) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserDTOMapper userDTOMapper, OTPService otpVerificationService, OTPComponent otpComponent) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userDTOMapper = userDTOMapper;
         this.otpVerificationService = otpVerificationService;
-        this.otp = otp;
+        this.otpComponent = otpComponent;
+    }
+
+    private OTP otpDetails(User user){
+        OTP otp = new OTP();
+        otp.setOtp(otpComponent.generateOTP());
+        otp.setCreatedAt(Date.from(Instant.now().plusMillis(MINUTES)));
+        otp.setUser(user);
+        return otp;
     }
 
     @Override
     public UserDTO createUser(User user) {
-        if (user == null){
-            throw new NotFoundException("No data provided");
+        Optional<User> userOptional = userRepository.findUserByEmail(user.getEmail());
+        if (userOptional.isPresent()){
+            throw new InvalidDataException("User Already exist");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(user.getRole().toUpperCase());
-        OTP otp = new OTP();
-        otp.setOtp(1234);
-        otp.setCreatedAt(Date.from(Instant.now().plusMillis(MINUTES)));
-        otp.setUser(user);
-        user.setOtp(otp);
-        boolean isOtpSent = this.otp.sendOTP(user.getEmail());
+        OTP otpDetails = otpDetails(user);
+        user.setOtp(otpDetails);
+        boolean isOtpSent = this.otpComponent.sendOTP(user.getEmail(), otpDetails.getOtp());
         if (isOtpSent){
             userRepository.save(user);
             return UserDTOMapper.toDTO(user);

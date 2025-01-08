@@ -1,7 +1,7 @@
 package com.rent_management_system.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rent_management_system.OTP.OTP;
+import com.rent_management_system.Authentiication.OTP;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

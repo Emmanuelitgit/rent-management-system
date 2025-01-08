@@ -1,4 +1,4 @@
-package com.rent_management_system.OTP;
+package com.rent_management_system.Authentiication;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
