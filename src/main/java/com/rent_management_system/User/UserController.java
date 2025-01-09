@@ -41,18 +41,21 @@ public class UserController {
 
     @GetMapping("/user/{id}")
     public ResponseEntity<Object> getUserById(@PathVariable Long id){
+        log.info("In get user by ID method:========");
         UserDTO userDTO = userService.getUserById(id);
         return ResponseHandler.responseBuilder("User details", userDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/remove-user/{id}")
     public ResponseEntity<Object> removeUserById(@PathVariable Long id){
+        log.info("In remove user by Id method:======");
         userService.removeUserById(id);
         return ResponseHandler.responseBuilder("User deleted successfully", null, HttpStatus.OK);
     }
 
     @PutMapping("/update-user/{id}")
     public ResponseEntity<Object> updateUserById(@PathVariable Long id, User user){
+        log.info("In update user by Id method:======");
         UserDTO userDTO = userService.updateUserById(id, user);
         return ResponseHandler.responseBuilder("User updated successfully", userDTO, HttpStatus.OK);
     }

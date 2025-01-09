@@ -38,7 +38,7 @@ public class OTPComponent {
     // a method to genera a random otp code
     public Long generateOTP(){
         RandomGenerator generator = new Random();
-        return generator.nextLong(2001);
+        return generator.nextLong(2001, 9000);
     }
 
     // a method to send an otp to user via their email
@@ -48,7 +48,7 @@ public class OTPComponent {
         message.setText("""
                 Hi, kindly enter the OTP code below to verify your email
                 The code will expire in 5 minutes.
-                OTP is %s>
+                OTP is %s
                 """.formatted(otp));
         message.setFrom("eyidana001@gmail.com");
         message.setTo(email);
@@ -69,7 +69,6 @@ public class OTPComponent {
             boolean expirationTime = Date.from(Instant.now()).before(verificationOptional.get().getCreatedAt());
             int isOtpMatch = verificationOptional.get().getOtp().compareTo(otp);
             if (!expirationTime){
-                otpVerificationService.removeOTPById(verificationOptional.get().getId());
                 throw new UnAuthorizedException("Otp has expired");
             }
             if (isOtpMatch != 0){

@@ -49,7 +49,7 @@ public class OTPService {
     }
 
     @Transactional
-    public void resendOTP(String email){
+    public void resendOTP(String email, Long otpCode){
         Optional<User> userOptional = userRepository.findUserByEmail(email);
         if (userOptional.isEmpty()){
             throw new NotFoundException("User with the provided email cannot be found");
@@ -58,7 +58,7 @@ public class OTPService {
         OTP otp = new OTP();
         otp.setCreatedAt(Date.from(Instant.now().plusMillis(MINUTES)));
         otp.setStatus(false);
-        otp.setOtp(generateOTP());
+        otp.setOtp(otpCode);
         otp.setUser(user);
         user.setOtp(otp);
         otpRepository.save(otp);

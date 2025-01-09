@@ -37,16 +37,18 @@ public class AuthController {
     private final OTPRepository otpRepository;
     private final OTPComponent OTPComponent;
     private final OTPService otpService;
+    private final OTPComponent otpComponent;
 
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, JWTAccess jwtAccess, UserRepository userRepository, UserRepository userRepository1, OTPRepository otpRepository, OTPComponent OTPComponent, OTPService otpService) {
+    public AuthController(AuthenticationManager authenticationManager, JWTAccess jwtAccess, UserRepository userRepository, UserRepository userRepository1, OTPRepository otpRepository, OTPComponent OTPComponent, OTPService otpService, com.rent_management_system.Components.OTPComponent otpComponent) {
         this.authenticationManager = authenticationManager;
         this.jwtAccess = jwtAccess;
         this.userRepository = userRepository1;
         this.otpRepository = otpRepository;
         this.OTPComponent = OTPComponent;
         this.otpService = otpService;
+        this.otpComponent = otpComponent;
     }
 
     private Object getUserDetails(User user){
@@ -87,7 +89,18 @@ public class AuthController {
 
     @PostMapping("/resend-otp")
     public ResponseEntity<Object> resendOTP(@RequestBody OTPVerifyPayload payload){
-        otpService.resendOTP(payload.email);
+        Optional<User> userOptional = userRepository.findUserByEmail(payload.email);
+        if (userOptional.isEmpty()){
+            throw new NotFoundException("User not found");
+        }
+        Optional<OTP> otpOptional = otpRepository.findOTPVerificationByUser_Id(userOptional.get().getId());
+        if (otpOptional.isEmpty()){
+            throw new NotFoundException("OTP not found");
+        }
+        otpService.removeOTPById(otpOptional.get().getId());
+        Long otpCode = otpComponent.generateOTP();
+        otpComponent.sendOTP(payload.email, otpCode);
+        otpService.resendOTP(payload.email, otpCode);
         return ResponseHandler.responseBuilder("OTP sent successfully", null, HttpStatus.OK);
     }
 
