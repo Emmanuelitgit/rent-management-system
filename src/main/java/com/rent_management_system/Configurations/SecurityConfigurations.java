@@ -40,17 +40,19 @@ public class SecurityConfigurations {
                 .cors(c -> c.configurationSource(corsConfiguration))
                 .authorizeHttpRequests(registry->{
                     registry
-//                            .requestMatchers(
-//                                    "/api/create-user",
-//                                    "/api/authenticate",
-//                                    "/api/verify-email",
-//                                    "/api/resend-otp",
-//                                    "/api/otp").permitAll()
-                            .anyRequest().permitAll();
+                            .requestMatchers(
+                                    "/api/create-user",
+                                    "/api/authenticate",
+                                    "/api/verify-email",
+                                    "/api/resend-otp",
+                                    "/api/otp").permitAll()
+                            .requestMatchers("/api/users").hasAnyRole("USER")
+                            .anyRequest().authenticated();
                 })
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
                     httpSecurityExceptionHandlingConfigurer
-                            .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
+                            .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                            .accessDeniedHandler(new AccessDeniedHandler());
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class JWTAccess {
 
     String SECRET = "RKUGLRKBKBSKLGSFIJSBKFBKJSDJBVugdtyidvctyfktvgkuyrcggchvrydtxtxuvyvgghghhhjhkjkjjurtyvkgvK";
-    long MINUTES = TimeUnit.MINUTES.toMillis(1);
+    long MINUTES = TimeUnit.MINUTES.toMillis(30);
 
     public String generateToken(String username){
         Map<String, Object> claims = new HashMap<>();
