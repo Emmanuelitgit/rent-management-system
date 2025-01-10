@@ -46,7 +46,7 @@ public class SecurityConfigurations {
 //                                    "/api/verify-email",
 //                                    "/api/resend-otp",
 //                                    "/api/otp", "/api/users").permitAll()
-//                            .requestMatchers("/api/users").hasAnyRole("USER")
+//                            .requestMatchers("/api/users").hasAnyRole("ADMIN")
                             .anyRequest().permitAll();
                 })
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
@@ -54,6 +54,9 @@ public class SecurityConfigurations {
                             .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                             .accessDeniedHandler(new AccessDeniedHandler());
                 })
+                .oauth2Login(oauth -> oauth
+                        .successHandler(new OAuth2LoginSuccessHandler())
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

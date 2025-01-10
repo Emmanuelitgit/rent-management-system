@@ -10,6 +10,7 @@ import com.rent_management_system.User.User;
 import com.rent_management_system.User.UserRepository;
 import com.rent_management_system.Response.ResponseHandler;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -30,7 +32,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -40,7 +42,6 @@ public class AuthController {
     private final OTPComponent OTPComponent;
     private final OTPService otpService;
     private final OTPComponent otpComponent;
-
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, JWTAccess jwtAccess, UserRepository userRepository, UserRepository userRepository1, OTPRepository otpRepository, OTPComponent OTPComponent, OTPService otpService, com.rent_management_system.Components.OTPComponent otpComponent) {
@@ -81,6 +82,22 @@ public class AuthController {
         }else{
             throw  new InvalidDataException("Invalid credentials");
         }
+    }
+
+    @GetMapping("/login/github")
+    public ResponseEntity<Void> loginWithGitHub(HttpServletResponse response) throws IOException {
+        // This will trigger the OAuth2 login flow
+        String authorizationUrl = "/oauth2/authorization/github";
+        response.sendRedirect(authorizationUrl);
+        return ResponseEntity.status(HttpStatus.FOUND).build(); // HTTP 302 redirect
+    }
+
+    @GetMapping("/login/google")
+    public ResponseEntity<Void> loginWithGoogle(HttpServletResponse response) throws IOException {
+        // This will trigger the OAuth2 login flow
+        String authorizationUrl = "/oauth2/authorization/google";
+        response.sendRedirect(authorizationUrl);
+        return ResponseEntity.status(HttpStatus.FOUND).build(); // HTTP 302 redirect
     }
 
     @PostMapping("/verify-email")
