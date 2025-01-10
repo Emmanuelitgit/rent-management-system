@@ -9,6 +9,7 @@ import com.rent_management_system.Exception.InvalidDataException;
 import com.rent_management_system.User.User;
 import com.rent_management_system.User.UserRepository;
 import com.rent_management_system.Response.ResponseHandler;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +101,7 @@ public class AuthController {
         }
         otpService.removeOTPById(otpOptional.get().getId());
         Long otpCode = otpComponent.generateOTP();
-        otpComponent.sendOTP(payload.email, otpCode);
+        otpComponent.sendOTP(payload.email, otpCode, userOptional.get().getFirstName());
         otpService.resendOTP(payload.email, otpCode);
         return ResponseHandler.responseBuilder("OTP sent successfully", null, HttpStatus.OK);
     }

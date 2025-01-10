@@ -1,20 +1,32 @@
 package com.rent_management_system.Components;
 
 import com.rent_management_system.Authentiication.OTP;
+import com.rent_management_system.Exception.InvalidDataException;
 import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.Exception.UnAuthorizedException;
 import com.rent_management_system.User.User;
 import com.rent_management_system.Authentiication.OTPRepository;
 import com.rent_management_system.User.UserRepository;
 import com.rent_management_system.Authentiication.OTPService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.exceptions.TemplateAssertionException;
+import org.thymeleaf.exceptions.TemplateEngineException;
+import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.random.RandomGenerator;
@@ -26,13 +38,15 @@ public class OTPComponent {
     private final UserRepository userRepository;
     private final OTPService otpVerificationService;
     private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
 
     @Autowired
-    public OTPComponent(OTPRepository otpRepository, UserRepository userRepository, OTPService otpVerificationService, JavaMailSender mailSender) {
+    public OTPComponent(OTPRepository otpRepository, UserRepository userRepository, OTPService otpVerificationService, JavaMailSender mailSender, TemplateEngine templateEngine) {
         this.otpRepository = otpRepository;
         this.userRepository = userRepository;
         this.otpVerificationService = otpVerificationService;
         this.mailSender = mailSender;
+        this.templateEngine = templateEngine;
     }
 
     // a method to genera a random otp code
@@ -41,19 +55,31 @@ public class OTPComponent {
         return generator.nextLong(2001, 9000);
     }
 
-    // a method to send an otp to user via their email
-    public boolean sendOTP(String email, Long otp){
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setSubject("OTP Verification");
-        message.setText("""
-                Hi, kindly enter the OTP code below to verify your email
-                The code will expire in 5 minutes.
-                OTP is %s
-                """.formatted(otp));
-        message.setFrom("eyidana001@gmail.com");
-        message.setTo(email);
-        mailSender.send(message);
-        return true;
+    public void sendOTP(String email, Long otp, String username) {
+        try {
+            // Prepare the email
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setSubject("OTP Verification");
+            helper.setFrom("eyidana001@gmail.com");
+            helper.setTo(email);
+
+            // Prepare the context for Thymeleaf
+            Context context = new Context();
+            context.setVariable("otp", otp);
+            context.setVariable("username", username);
+
+            // Process the Thymeleaf template
+            String htmlContent = templateEngine.process("OTPTemplate", context);
+
+            // Set the email content
+            helper.setText(htmlContent, true);
+
+            // Send the email
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new InvalidDataException("Error processing the thymeleaf template");
+        }
     }
 
 
@@ -94,3 +120,10 @@ public class OTPComponent {
         }
     }
 }
+
+
+//        helper.setText("""
+//                Hi, kindly enter the OTP code below to verify your email
+//                The code will expire in 5 minutes.
+//                OTP is %s
+//                """.formatted(otp));

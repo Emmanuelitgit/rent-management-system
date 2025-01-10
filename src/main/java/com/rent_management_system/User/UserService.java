@@ -5,11 +5,13 @@ import com.rent_management_system.Exception.InvalidDataException;
 import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.Authentiication.OTP;
 import com.rent_management_system.Authentiication.OTPService;
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -53,7 +55,7 @@ public class UserService implements UserInterface {
     }
 
     @Override
-    public UserDTO createUser(User user) {
+    public UserDTO createUser(User user){
         Optional<User> userOptional = userRepository.findUserByEmail(user.getEmail());
         if (userOptional.isPresent()){
             throw new InvalidDataException("User Already exist");
@@ -62,12 +64,9 @@ public class UserService implements UserInterface {
         user.setRole(user.getRole().toUpperCase());
         OTP otpDetails = otpDetails(user);
         user.setOtp(otpDetails);
-        boolean isOtpSent = this.otpComponent.sendOTP(user.getEmail(), otpDetails.getOtp());
-        if (isOtpSent){
-            userRepository.save(user);
-            return UserDTOMapper.toDTO(user);
-        }
-       throw new InvalidDataException("invalid email");
+        otpComponent.sendOTP(user.getEmail(), otpDetails.getOtp(), user.getFirstName());
+        userRepository.save(user);
+        return UserDTOMapper.toDTO(user);
     }
 
     public UserDTO getUserById(Long id){

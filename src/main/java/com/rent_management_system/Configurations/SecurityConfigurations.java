@@ -40,14 +40,14 @@ public class SecurityConfigurations {
                 .cors(c -> c.configurationSource(corsConfiguration))
                 .authorizeHttpRequests(registry->{
                     registry
-                            .requestMatchers(
-                                    "/api/create-user",
-                                    "/api/authenticate",
-                                    "/api/verify-email",
-                                    "/api/resend-otp",
-                                    "/api/otp").permitAll()
-                            .requestMatchers("/api/users").hasAnyRole("USER")
-                            .anyRequest().authenticated();
+//                            .requestMatchers(
+//                                    "/api/create-user",
+//                                    "/api/authenticate",
+//                                    "/api/verify-email",
+//                                    "/api/resend-otp",
+//                                    "/api/otp", "/api/users").permitAll()
+//                            .requestMatchers("/api/users").hasAnyRole("USER")
+                            .anyRequest().permitAll();
                 })
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
                     httpSecurityExceptionHandlingConfigurer
