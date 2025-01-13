@@ -1,11 +1,14 @@
 package com.rent_management_system.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rent_management_system.Apartment.Apartment;
 import com.rent_management_system.Authentiication.OTP;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -37,4 +40,7 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private OTP otp;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<Apartment> apartment;
 }

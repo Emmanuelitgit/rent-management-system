@@ -1,5 +1,6 @@
 package com.rent_management_system.User;
 
+import com.rent_management_system.Apartment.Apartment;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
