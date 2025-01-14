@@ -1,11 +1,9 @@
 package com.rent_management_system.Apartment;
-
-import com.rent_management_system.User.UserDTO;
+import com.rent_management_system.Components.UserDataDTO;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Component
 public class ApartmentDTOMapper {
@@ -18,12 +16,13 @@ public class ApartmentDTOMapper {
                 apartment.getBathrooms(),
                 apartment.getStatus(),
                 apartment.getDescription(),
-                new UserDTO(
+                new UserDataDTO(
                         apartment.getUser().getId(),
                         apartment.getUser().getFirstName(),
                         apartment.getUser().getLastName(),
                         apartment.getUser().getEmail(),
-                        apartment.getUser().getRole()
+                        apartment.getUser().getRole(),
+                        apartment.getUser().getPhone()
                         ),
                 apartment.getCreated_at(),
                 apartment.updated_at

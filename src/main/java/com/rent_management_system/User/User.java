@@ -1,11 +1,14 @@
 package com.rent_management_system.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.rent_management_system.Apartment.Apartment;
 import com.rent_management_system.Authentiication.OTP;
+import com.rent_management_system.RentInfo.RentInfo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -32,6 +35,9 @@ public class User {
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email provided")
     public String email;
+    @Column
+//    @NotNull(message = "phone number is required")
+    public Long phone;
     @Column(columnDefinition = "varchar(255) default 'USER'")
     public String role;
     @Column
@@ -40,7 +46,10 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private OTP otp;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Apartment> apartment;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<RentInfo> rentInfo;
 }

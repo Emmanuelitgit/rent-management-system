@@ -1,5 +1,8 @@
 package com.rent_management_system.Apartment;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rent_management_system.RentInfo.RentInfo;
 import com.rent_management_system.User.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +13,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -31,9 +35,13 @@ public class Apartment {
     @Enumerated(EnumType.STRING)
     public ApartmentStatus status;
     public String description;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
+    @ManyToMany(mappedBy = "apartment", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<RentInfo> rentInfo;
     @UpdateTimestamp
     @Column(updatable = false)
     public LocalDateTime created_at;

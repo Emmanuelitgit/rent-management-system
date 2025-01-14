@@ -14,7 +14,8 @@ public class UserDTOMapper {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getRole()
+                user.getRole(),
+                user.getPhone()
         );
     }
 

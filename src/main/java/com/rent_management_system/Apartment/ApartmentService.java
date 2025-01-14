@@ -4,6 +4,7 @@ import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.User.User;
 import com.rent_management_system.User.UserRepository;
 import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +48,7 @@ public class ApartmentService implements ApartmentServiceInterface {
     }
 
     @Override
+    @Transactional
     public ApartmentDTO getApartmentById(Long id) {
         Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
         if (apartmentOptional.isEmpty()){
