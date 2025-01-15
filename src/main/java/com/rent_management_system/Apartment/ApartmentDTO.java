@@ -1,6 +1,8 @@
 package com.rent_management_system.Apartment;
 
 import com.rent_management_system.Components.UserDataDTO;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -16,6 +18,7 @@ public class ApartmentDTO {
     public int bedrooms;
     public int bathrooms;
     public ApartmentStatus status;
+    public String file;
     public String description;
     public UserDataDTO user;
     public LocalDateTime created_at;

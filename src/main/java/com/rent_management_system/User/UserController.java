@@ -36,8 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/create-user")
-    public ResponseEntity<Object> createUser(@Valid @RequestBody User user, Model model) {
-        model.addAttribute("user", user.getFirstName());
+    public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
         log.info("In create user method:=========");
         UserDTO userData = userService.createUser(user);
         log.info("New user created successfully:=========");

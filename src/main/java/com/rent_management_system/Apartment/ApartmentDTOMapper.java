@@ -1,5 +1,6 @@
 package com.rent_management_system.Apartment;
 import com.rent_management_system.Components.UserDataDTO;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ public class ApartmentDTOMapper {
                 apartment.getBedrooms(),
                 apartment.getBathrooms(),
                 apartment.getStatus(),
+                apartment.getFile(),
                 apartment.getDescription(),
                 new UserDataDTO(
                         apartment.getUser().getId(),
@@ -28,6 +30,8 @@ public class ApartmentDTOMapper {
                 apartment.updated_at
         );
     }
+
+//    public Apartment toStudentDTO()
 
     public List<ApartmentDTO> apartmentDTOList(List<Apartment> apartments){
         return apartments.stream()

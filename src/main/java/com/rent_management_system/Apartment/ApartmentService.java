@@ -4,6 +4,7 @@ import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.User.User;
 import com.rent_management_system.User.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ApartmentService implements ApartmentServiceInterface {
 

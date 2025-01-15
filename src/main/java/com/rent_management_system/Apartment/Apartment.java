@@ -34,6 +34,7 @@ public class Apartment {
     public int bathrooms;
     @Enumerated(EnumType.STRING)
     public ApartmentStatus status;
+    public String file;
     public String description;
     @ManyToOne
     @JoinColumn(name = "user_id")
