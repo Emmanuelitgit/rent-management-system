@@ -1,6 +1,7 @@
 package com.rent_management_system.Apartment;
 
 import com.rent_management_system.Exception.NotFoundException;
+import com.rent_management_system.FileManager.ApartmentFile;
 import com.rent_management_system.User.User;
 import com.rent_management_system.User.UserRepository;
 import jakarta.transaction.Transactional;
@@ -42,8 +43,12 @@ public class ApartmentService implements ApartmentServiceInterface {
         if (userOptional.isEmpty()){
             throw new NotFoundException("User not found");
         }
+        ApartmentFile apartmentFile = new ApartmentFile();
+        apartmentFile.setFile(apartment.getFile());
+        apartmentFile.setApartment(apartment);
         User user = userOptional.get();
         apartment.setUser(user);
+        apartment.setApartmentFiles(List.of(apartmentFile));
         user.getApartment().add(apartment);
         return ApartmentDTOMapper.toDTO(apartment);
     }
