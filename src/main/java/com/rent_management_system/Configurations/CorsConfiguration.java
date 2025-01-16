@@ -8,6 +8,12 @@ import java.util.List;
 
 @Configuration
 public class CorsConfiguration implements CorsConfigurationSource {
+    /**
+     * @auther Emmanuel Yidana
+     * @description: configurations to allow certain origins and http method types to access the server
+     * @date 016-01-2025
+     * @return config
+     */
     @Override
     public org.springframework.web.cors.CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
         org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();

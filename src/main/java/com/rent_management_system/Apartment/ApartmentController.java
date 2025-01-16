@@ -1,5 +1,6 @@
 package com.rent_management_system.Apartment;
 
+import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.Response.ResponseHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import java.util.List;
 @RequestMapping("/api")
 public class ApartmentController {
     private final ApartmentService apartmentService;
+    private final String FILE_BASEURL_PROD = "https://rent-management-system-uyyb.onrender.com/";
+    private final String FILE_BASEURL_DEV = " http://localhost:5000/";
 
     @Autowired
     public ApartmentController(ApartmentService apartmentService) {
@@ -40,6 +43,13 @@ public class ApartmentController {
         return fileName;
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to create an apartment
+     * @date 016-01-2025.
+     * @param: id, name, bedrooms, bathrooms, bathrooms, status, file, description
+     * @return apartment object
+     */
     @PostMapping("/create-apartment/{id}")
     public ResponseEntity<Object> createApartment(
             @RequestParam("name") String name,
@@ -58,24 +68,28 @@ public class ApartmentController {
             if (!uploadsDir.exists()) {
                 uploadsDir.mkdirs();
             }
-            log.info("FILE CREATED");
             Files.copy(file.getInputStream(), fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
-
-        log.info("File String{}", getFileString(filePayload));
 
         Apartment apartment = new Apartment();
         apartment.setName(name);
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
         apartment.setStatus(status);
-//        apartment.setFile(filePayload);
+        apartment.setFile(FILE_BASEURL_PROD+getFileString(filePayload));
         apartment.setDescription(description);
         log.info("In create apartment method:===========");
         ApartmentDTO apartmentDTO = apartmentService.createApartment(apartment, id);
         return ResponseHandler.responseBuilder("Apartment created successfully", apartmentDTO, HttpStatus.CREATED);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to get apartment by id
+     * @date 016-01-2025.
+     * @param: id
+     * @return apartment object
+     */
     @GetMapping("/apartment/{id}")
     public ResponseEntity<Object> getApartmentById(@PathVariable Long id){
         log.info("In get apartment by id:============");
@@ -83,17 +97,29 @@ public class ApartmentController {
         return ResponseHandler.responseBuilder("Apartment details", apartmentDTO, HttpStatus.OK);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to update apartment by id
+     * @date 016-01-2025
+     * @param: id, apartment object
+     * @return updated apartment object
+     */
     @PostMapping("/update-apartment/{id}")
     public ResponseEntity<Object> updateApartmentById(@RequestBody Apartment apartment, @PathVariable Long id){
         ApartmentDTO apartmentDTO = apartmentService.updateApartmentById(apartment, id);
         return ResponseHandler.responseBuilder("Apartment updated successfully", apartmentDTO, HttpStatus.OK);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to remove apartment by id
+     * @date 016-01-2025
+     * @param: id
+     * @return ResponseEntity with null object
+     */
     @DeleteMapping("/remove-apartment/{id}")
     public ResponseEntity<Object> removeApartmentById(@PathVariable Long id){
         apartmentService.removeApartmentById(id);
         return ResponseHandler.responseBuilder("Apartment deleted successfully", null, HttpStatus.OK);
     }
 }
-
-

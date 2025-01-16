@@ -1,5 +1,6 @@
 package com.rent_management_system.User;
 
+import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.Response.ResponseHandler;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -19,15 +20,18 @@ import java.util.List;
 @RequestMapping("/api")
 public class UserController {
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserService userService, UserRepository userRepository) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userRepository = userRepository;
     }
 
-
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to return fetch all users
+     * @date 016-01-2025
+     * @return List of users
+     */
     @GetMapping("/users")
     public ResponseEntity<Object> getUsers(){
         List<UserDTO> userDTOList = userService.getUsers();
@@ -35,6 +39,13 @@ public class UserController {
         return ResponseHandler.responseBuilder("User details", userDTOList, HttpStatus.OK);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to create a new user
+     * @date 016-01-2025
+     * @param user object
+     * @return user object
+     */
     @PostMapping("/create-user")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
         log.info("In create user method:=========");
@@ -43,6 +54,13 @@ public class UserController {
         return ResponseHandler.responseBuilder("user added successfully", userData, HttpStatus.CREATED);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to get user by id
+     * @date 016-01-2025
+     * @param: id
+     * @return user object
+     */
     @GetMapping("/user/{id}")
     public ResponseEntity<Object> getUserById(@PathVariable Long id){
         log.info("In get user by ID method:========");
@@ -50,6 +68,13 @@ public class UserController {
         return ResponseHandler.responseBuilder("User details", userDTO, HttpStatus.OK);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to remove user by id
+     * @date 016-01-2025
+     * @param: id
+     * @return ResponseEntity with null data
+     */
     @DeleteMapping("/remove-user/{id}")
     public ResponseEntity<Object> removeUserById(@PathVariable Long id){
         log.info("In remove user by Id method:======");
@@ -57,6 +82,13 @@ public class UserController {
         return ResponseHandler.responseBuilder("User deleted successfully", null, HttpStatus.OK);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to update user by id
+     * @date 016-01-2025
+     * @param id, user object
+     * @return updated user object
+     */
     @PutMapping("/update-user/{id}")
     public ResponseEntity<Object> updateUserById(@PathVariable Long id, User user){
         log.info("In update user by Id method:======");

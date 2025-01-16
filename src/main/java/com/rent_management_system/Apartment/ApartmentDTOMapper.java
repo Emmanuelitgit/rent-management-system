@@ -9,6 +9,13 @@ import java.util.stream.Collectors;
 @Component
 public class ApartmentDTOMapper {
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to map apartment object to apartmentDTO object
+     * @date 016-01-2025
+     * @param: apartment object
+     * @return apartmentDTO object
+     */
     public static ApartmentDTO toDTO(Apartment apartment){
         return new ApartmentDTO(
                 apartment.getId(),
@@ -31,8 +38,13 @@ public class ApartmentDTOMapper {
         );
     }
 
-//    public Apartment toStudentDTO()
-
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to map list of apartments to list of apartmentDTO
+     * @date 016-01-2025
+     * @param: list of apartments
+     * @return list of apartmentDTO
+     */
     public List<ApartmentDTO> apartmentDTOList(List<Apartment> apartments){
         return apartments.stream()
                 .map(ApartmentDTOMapper::toDTO)

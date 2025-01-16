@@ -1,5 +1,7 @@
 package com.rent_management_system.RentInfo;
 
+import com.rent_management_system.Exception.InvalidDataException;
+import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.Response.ResponseHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,13 @@ public class RentInfoController {
         this.rentInfoService = rentInfoService;
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method to create rent info
+     * @date 016-01-2025
+     * @param: rentInfo object
+     * @return rentInfoDTO object
+     */
     @PostMapping("/create-rent")
     public ResponseEntity<Object> createRentInfo(@RequestBody RentInfo rentInfo, @RequestParam Long userId, @RequestParam Long apartmentId){
         log.info("In create rentInfo method:===========");
@@ -27,6 +36,12 @@ public class RentInfoController {
         return ResponseHandler.responseBuilder("RentInfo created successfully", rentData, HttpStatus.CREATED);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method to fetch all rent info
+     * @date 016-01-2025
+     * @return list of rentInfoDTO
+     */
     @GetMapping("/rentInfo-list")
     public ResponseEntity<Object> getRentInfoList(){
         log.info("In get rentInfoList method:==========");
@@ -34,6 +49,13 @@ public class RentInfoController {
         return ResponseHandler.responseBuilder("RentInfo list", rentInfoList, HttpStatus.OK);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method to get rent info by id
+     * @date 016-01-2025
+     * @param: id
+     * @return rentInfoDTO object
+     */
     @GetMapping("/rentInfo/{id}")
     public ResponseEntity<Object> getRentInfoById(@PathVariable Long id){
         log.info("In get rentInfo method:============");
@@ -41,6 +63,12 @@ public class RentInfoController {
         return ResponseHandler.responseBuilder("RentInfo detail", rentInfoDTO, HttpStatus.OK);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method to remove rent info by id
+     * @date 016-01-2025
+     * @param: id
+     */
     @DeleteMapping("/remove-rentInfo/{id}")
     public ResponseEntity<Object> removeRentInfo(@PathVariable Long id){
         log.info("In remove rent info method:=========");

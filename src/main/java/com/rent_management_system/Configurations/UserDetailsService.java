@@ -22,6 +22,14 @@ public class UserDetailsService implements org.springframework.security.core.use
         this.userRepository = userRepository;
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to load user details from a database by username
+     * @date 016-01-2025
+     * @param: username
+     * @throws UnAuthorizedException - if user is not authenticated or not found
+     * @return userDetails
+     */
     @Override
     public UserDetails loadUserByUsername(String username) {
         Optional<User> user = userRepository.findUserByEmail(username);

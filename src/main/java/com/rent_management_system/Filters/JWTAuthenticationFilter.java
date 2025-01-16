@@ -30,7 +30,12 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         this.jwtAccess = jwtAccess;
         this.userDetailsService = userDetailsService;
     }
-
+    /**
+     * @auther Emmanuel Yidana
+     * @description: this implementation used to intercept incoming/outgoing requests, extract and verify token for protected routes/endpoints
+     * @date 016-01-2025
+     * @param request, response, filterChain
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {

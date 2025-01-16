@@ -5,6 +5,7 @@ import com.rent_management_system.Apartment.ApartmentRepository;
 import com.rent_management_system.Apartment.ApartmentStatus;
 import com.rent_management_system.Exception.InvalidDataException;
 import com.rent_management_system.Exception.NotFoundException;
+import com.rent_management_system.Exception.UnAuthorizedException;
 import com.rent_management_system.User.User;
 import com.rent_management_system.User.UserRepository;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,15 @@ public class RentInfoService implements RentInfoServiceInterface{
         this.rentDTOMapper = rentDTOMapper;
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method to create rent info
+     * @date 016-01-2025
+     * @param: rentInfo, userId, apartmentId
+     * @throws NotFoundException - if user or apartment is not found
+     * @throws InvalidDataException - if apartment is occupied already
+     * @return rentInfoDTO object
+     */
     @Override
     @Transactional
     public RentInfoDTO createRentInfo(RentInfo rentInfo, Long userId, Long apartmentId) {
@@ -57,6 +67,13 @@ public class RentInfoService implements RentInfoServiceInterface{
         return RentDTOMapper.toDTO(rentInfo);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method to remove rent info by id
+     * @date 016-01-2025
+     * @param: id
+     * @throws NotFoundException - if rent info does not exist
+     */
     @Override
     @Transactional
     public void removeRentInfo(Long id) {
@@ -72,6 +89,14 @@ public class RentInfoService implements RentInfoServiceInterface{
         rentInfoRepository.deleteById(id);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method to get rent info by id
+     * @date 016-01-2025
+     * @param: id
+     * @throws NotFoundException - if rent info does not exist
+     * @return rentInfoDTO object
+     */
     @Override
     @Transactional
     public RentInfoDTO getRentInfoById(Long id) {
@@ -83,6 +108,13 @@ public class RentInfoService implements RentInfoServiceInterface{
         return RentDTOMapper.toDTO(rentInfo);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method to fetch all rent info
+     * @date 016-01-2025
+     * @throws NotFoundException - if no rent info is found
+     * @return list of rentInfoDTO
+     */
     @Override
     @Transactional
     public List<RentInfoDTO> getRentInfoList() {

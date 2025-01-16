@@ -8,7 +8,6 @@ import com.rent_management_system.User.User;
 import com.rent_management_system.Authentiication.OTPRepository;
 import com.rent_management_system.User.UserRepository;
 import com.rent_management_system.Authentiication.OTPService;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +16,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.exceptions.TemplateAssertionException;
-import org.thymeleaf.exceptions.TemplateEngineException;
-import org.thymeleaf.exceptions.TemplateInputException;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.random.RandomGenerator;
@@ -55,35 +47,41 @@ public class OTPComponent {
         return generator.nextLong(2001, 9000);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to send an otp via email
+     * @date 016-01-2025
+     * @param: email, otp, username
+     * @throws InvalidDataException - throws InvalidDataException if any kind of exception occurred
+     */
     public void sendOTP(String email, Long otp, String username) {
         try {
-            // Prepare the email
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setSubject("OTP Verification");
             helper.setFrom("eyidana001@gmail.com");
             helper.setTo(email);
 
-            // Prepare the context for Thymeleaf
             Context context = new Context();
             context.setVariable("otp", otp);
             context.setVariable("username", username);
 
-            // Process the Thymeleaf template
             String htmlContent = templateEngine.process("OTPTemplate", context);
-
-            // Set the email content
             helper.setText(htmlContent, true);
-
-            // Send the email
             mailSender.send(message);
         } catch (Exception e) {
             throw new InvalidDataException("Error processing the thymeleaf template");
         }
     }
 
-
-    // a method to verify user email along with the otp code
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to verify otp against email
+     * @date 016-01-2025
+     * @param: email, otp
+     * @throws NotFoundException - if provided email does not exist or otp does not exist
+     * @throws UnAuthorizedException - if otp does not match or is expired
+     */
     public void verifyOtp(String email, Long otp){
         Optional<User> userOptional = userRepository.findUserByEmail(email);
         if (userOptional.isEmpty()){
@@ -106,8 +104,14 @@ public class OTPComponent {
         throw new NotFoundException("No OTP code associated with the provided email!");
     }
 
-   // this method is called during login to check if user email already verified or not.
-    // access to login is denied if user has not verified yet after sign up.
+    /**
+     * @auther Emmanuel Yidana
+     * @description: this method is invoked during login to check if user email is verified or not
+     * @date 016-01-2025
+     * @param: email
+     * @throws NotFoundException - if provided email does not exist
+     * @throws UnAuthorizedException - if email is not verified
+     */
     public void verifyUserOTPStatusDuringLogin(String email){
         Optional<User> userOptional = userRepository.findUserByEmail(email);
         if (userOptional.isEmpty()){
@@ -120,10 +124,3 @@ public class OTPComponent {
         }
     }
 }
-
-
-//        helper.setText("""
-//                Hi, kindly enter the OTP code below to verify your email
-//                The code will expire in 5 minutes.
-//                OTP is %s
-//                """.formatted(otp));

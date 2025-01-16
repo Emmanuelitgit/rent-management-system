@@ -1,7 +1,14 @@
 package com.rent_management_system.Components;
 
+import com.rent_management_system.Exception.NotFoundException;
+import com.rent_management_system.Exception.UnAuthorizedException;
 import lombok.*;
 
+/**
+ * @auther Emmanuel Yidana
+ * @description: a centralized class that represents the payload of user object we what to include in certain areas. eg user in apartment, user in rent info
+ * @date 016-01-2025
+ */
 @Data
 @Getter
 @Setter

@@ -1,6 +1,5 @@
 package com.rent_management_system.Authentiication;
 
-import com.rent_management_system.Components.OTPComponent;
 import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.User.User;
 import com.rent_management_system.User.UserRepository;
@@ -28,26 +27,32 @@ public class OTPService {
         this.userRepository = userRepository;
     }
 
-
+    /**
+     * @auther Emmanuel Yidana
+     * @description a method to remove otp by id
+     * @date 016-01-2025
+     * @param: id
+     * @throws NotFoundException - if otp not found
+     */
     @Transactional
     public void removeOTPById(Long id) {
-        // Find the OTPVerification by ID
         OTP otp = otpRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("OTP not found"));
-        // Remove the association with the User
+
         User user = otp.getUser();
         if (user != null) {
             user.setOtp(null);
         }
-        // Delete the OTPVerification
         otpRepository.delete(otp);
     }
 
-    public Long generateOTP(){
-        RandomGenerator generator = new Random();
-        return generator.nextLong(2001);
-    }
-
+    /**
+     * @auther Emmanuel Yidana
+     * @description A method to resend otp code
+     * @date 016-01-2025
+     * @param email, otpCode
+     * @throws NotFoundException - if provided email does not exist
+     */
     @Transactional
     public void resendOTP(String email, Long otpCode){
         Optional<User> userOptional = userRepository.findUserByEmail(email);

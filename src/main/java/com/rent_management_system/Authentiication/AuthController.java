@@ -3,13 +3,13 @@ package com.rent_management_system.Authentiication;
 import com.rent_management_system.Components.JWTAccess;
 import com.rent_management_system.Components.OTPComponent;
 import com.rent_management_system.Exception.NotFoundException;
+import com.rent_management_system.Exception.UnAuthorizedException;
 import com.rent_management_system.User.UserDTO;
 import com.rent_management_system.User.UserDTOMapper;
 import com.rent_management_system.Exception.InvalidDataException;
 import com.rent_management_system.User.User;
 import com.rent_management_system.User.UserRepository;
 import com.rent_management_system.Response.ResponseHandler;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -21,7 +21,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -54,6 +53,14 @@ public class AuthController {
         this.otpComponent = otpComponent;
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: an insider method used to get user details. it is called in the authenticate method to get user details for authenticating
+     * @date 016-01-2025
+     * @param user object consisting of username and password
+     * @throws NotFoundException - if user does not exist
+     * @return user object
+     */
     private Object getUserDetails(User user){
         Optional<User> userOptional = userRepository.findUserByEmail(user.getEmail());
         String token = jwtAccess.generateToken(user.getEmail());
@@ -67,8 +74,17 @@ public class AuthController {
         return data;
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method for authenticating users during login
+     * @date 016-01-2025
+     * @param user object consisting of username and password
+     * @throws UnAuthorizedException - if user provide wrong credentials
+     * @return user object including a token
+     */
     @PostMapping("/authenticate")
     public ResponseEntity<Object> authenticateUser(@RequestBody User user, HttpSession session){
+        log.info("In authenticate method:===========");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 user.getEmail(),
                 user.getPassword()
@@ -78,36 +94,64 @@ public class AuthController {
         OTPComponent.verifyUserOTPStatusDuringLogin(user.getEmail());
         if (authentication.isAuthenticated()){
            Object data = getUserDetails(user);
+           log.info("Authenticated successfully:============");
             return ResponseHandler.responseBuilder("authenticated", data, HttpStatus.OK);
         }else{
-            throw  new InvalidDataException("Invalid credentials");
+            throw  new UnAuthorizedException("Invalid credentials");
         }
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method for authenticating users via GITHUB
+     * @date 016-01-2025
+     */
     @GetMapping("/login/github")
     public ResponseEntity<Void> loginWithGitHub(HttpServletResponse response) throws IOException {
-        // This will trigger the OAuth2 login flow
+        log.info("In login with github method:=============");
         String authorizationUrl = "/oauth2/authorization/github";
         response.sendRedirect(authorizationUrl);
-        return ResponseEntity.status(HttpStatus.FOUND).build(); // HTTP 302 redirect
+        log.info("Login with github success:==============");
+        return ResponseEntity.status(HttpStatus.FOUND).build();
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method for authenticating users via GOOGLE
+     * @date 016-01-2025
+     */
     @GetMapping("/login/google")
     public ResponseEntity<Void> loginWithGoogle(HttpServletResponse response) throws IOException {
-        // This will trigger the OAuth2 login flow
+        log.info("In login with google method:=============");
         String authorizationUrl = "/oauth2/authorization/google";
         response.sendRedirect(authorizationUrl);
-        return ResponseEntity.status(HttpStatus.FOUND).build(); // HTTP 302 redirect
+        log.info("Login with google success:==============");
+        return ResponseEntity.status(HttpStatus.FOUND).build();
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method for verifying otp against email
+     * @date 016-01-2025
+     * @return ResponseEntity with boolean
+     */
     @PostMapping("/verify-email")
     public ResponseEntity<Object> verifyEmail(@Valid @RequestBody OTPVerifyPayload payload){
+        log.info("In verify otp method:=================");
         OTPComponent.verifyOtp(payload.email, payload.otp);
+        log.info("OTP verified successfully:==============");
         return ResponseHandler.responseBuilder("verified successfully", true, HttpStatus.OK);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method for resending otp
+     * @date 016-01-2025
+     * @return ResponseEntity with boolean
+     */
     @PostMapping("/resend-otp")
     public ResponseEntity<Object> resendOTP(@RequestBody OTPVerifyPayload payload){
+        log.info("In resend otp method:================");
         Optional<User> userOptional = userRepository.findUserByEmail(payload.email);
         if (userOptional.isEmpty()){
             throw new NotFoundException("User not found");
@@ -120,15 +164,16 @@ public class AuthController {
         Long otpCode = otpComponent.generateOTP();
         otpComponent.sendOTP(payload.email, otpCode, userOptional.get().getFirstName());
         otpService.resendOTP(payload.email, otpCode);
+        log.info("OTP sent successfully:===============");
         return ResponseHandler.responseBuilder("OTP sent successfully", null, HttpStatus.OK);
     }
 
-    //    @DeleteMapping("/remove-otp/{id}")
-//    public ResponseEntity<Object> removeOTP(@PathVariable Long id){
-//        otpVerificationService.removeOTPByUserId(id);
-//        return ResponseHandler.responseBuilder("deleted", null, HttpStatus.OK);
-//    }
-
+    /**
+     * @auther Emmanuel Yidana
+     * @description: a method for retrieving all otp
+     * @date 016-01-2025
+     * @return list of otp
+     */
     @GetMapping("/otp")
     public ResponseEntity<Object> getOTPs(){
         List<OTP> otp = otpRepository.findAll();

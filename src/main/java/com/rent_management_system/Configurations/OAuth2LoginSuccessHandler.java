@@ -19,7 +19,11 @@ import java.util.Map;
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     private final JWTAccess jwtAccess = new JWTAccess();
 
-
+    /**
+     * @auther Emmanuel Yidana
+     * @description: an implementation to handle what happens upon successfully login via OAuth2 login
+     * @date 016-01-2025
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         OAuth2User user = (OAuth2User) authentication.getPrincipal();

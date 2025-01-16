@@ -12,6 +12,11 @@ import java.io.IOException;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+    /**
+     * @auther Emmanuel Yidana
+     * @description: an implementation handle errors that arise during authentication
+     * @date 016-01-2025
+     */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

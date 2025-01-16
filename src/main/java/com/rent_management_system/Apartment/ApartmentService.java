@@ -27,6 +27,14 @@ public class ApartmentService implements ApartmentServiceInterface {
         this.apartmentDTOMapper = apartmentDTOMapper;
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to create apartment. we associate the apartment with the owner thus the user creating it
+     * @date 016-01-2025
+     * @param: id, apartment object
+     * @throws NotFoundException- throws NotFoundException if user does not exist
+     * @return apartmentDTO object
+     */
     @Transactional
     @Override
     public ApartmentDTO createApartment(Apartment apartment, Long id) {
@@ -40,6 +48,13 @@ public class ApartmentService implements ApartmentServiceInterface {
         return ApartmentDTOMapper.toDTO(apartment);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A to fetch all apartments
+     * @date 016-01-2025
+     * @throws NotFoundException- throws NotFoundException if no apartment exist
+     * @return list of apartments
+     */
     @Override
     public List<ApartmentDTO> getApartmentList() {
         List<Apartment> apartments = apartmentRepository.findAll();
@@ -49,6 +64,14 @@ public class ApartmentService implements ApartmentServiceInterface {
        return apartmentDTOMapper.apartmentDTOList(apartments);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to get apartment by id
+     * @date 016-01-2025
+     * @param: id
+     * @throws NotFoundException- throws NotFoundException if apartment does not exist
+     * @return apartment object
+     */
     @Override
     @Transactional
     public ApartmentDTO getApartmentById(Long id) {
@@ -60,6 +83,14 @@ public class ApartmentService implements ApartmentServiceInterface {
         return ApartmentDTOMapper.toDTO(apartment);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to update apartment by id
+     * @date 016-01-2025
+     * @param: id, apartment object
+     * @throws NotFoundException- throws NotFoundException if apartment does not exist
+     * @return updated apartment object
+     */
     @Override
     public ApartmentDTO updateApartmentById(Apartment payload, Long id) {
         Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
@@ -78,6 +109,13 @@ public class ApartmentService implements ApartmentServiceInterface {
 
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A method to remove apartment by id
+     * @date 016-01-2025
+     * @param: id
+     * @throws NotFoundException- throws NotFoundException if apartment does not exist
+     */
     @Override
     @Transactional
     public void removeApartmentById(Long id) {

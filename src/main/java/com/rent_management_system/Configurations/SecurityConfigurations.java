@@ -1,5 +1,6 @@
 package com.rent_management_system.Configurations;
 
+import com.rent_management_system.Exception.UnAuthorizedException;
 import com.rent_management_system.Filters.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,13 @@ public class SecurityConfigurations {
         this.corsConfiguration = corsConfiguration;
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A bean to handle security configurations and operations
+     * @date 016-01-2025
+     * @param: httpSecurity
+     * @return securityFilterChain
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -61,7 +69,12 @@ public class SecurityConfigurations {
                 .build();
     }
 
-
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A bean to handle authentication manager configuration for authenticating and loading user details by calling on the loadUserByUsername from the UserDetailsService class
+     * @date 016-01-2025
+     * @return ProviderManager
+     */
     @Bean
     AuthenticationManager authenticationManager(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -70,6 +83,12 @@ public class SecurityConfigurations {
         return new ProviderManager(provider);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: A bean to handle password encoding and decoding
+     * @date 016-01-2025
+     * @return encoded or decoded password
+     */
     @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();

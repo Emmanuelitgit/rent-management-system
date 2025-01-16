@@ -1,14 +1,12 @@
 package com.rent_management_system.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.rent_management_system.Apartment.Apartment;
 import com.rent_management_system.Authentiication.OTP;
 import com.rent_management_system.RentInfo.RentInfo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;

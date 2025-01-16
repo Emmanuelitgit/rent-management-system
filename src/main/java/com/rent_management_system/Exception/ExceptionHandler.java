@@ -19,6 +19,12 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class ExceptionHandler extends ResponseEntityExceptionHandler{
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: this method is triggered when MethodArgumentNotValidException is thrown
+     * @date 016-01-2025
+     * @param: ResponseEntity object
+     */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         Map<String, Object> objectBody = new HashMap<>();
@@ -38,6 +44,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler{
         return new ResponseEntity<>(objectBody, status);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: this method is triggered when BadCredentialsException is thrown
+     * @date 016-01-2025
+     * @param: ResponseEntity object
+     */
     @org.springframework.web.bind.annotation.ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
         Map<String, Object> response = new HashMap<>();
@@ -47,6 +59,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler{
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: this method is triggered when NotFoundException is thrown
+     * @date 016-01-2025
+     * @param: ResponseEntity object
+     */
     @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Exception> handleNotFoundException(NotFoundException notFoundException){
         Exception exception = new Exception(
@@ -57,6 +75,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler{
         return new ResponseEntity<>(exception, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: this method is triggered when InvalidDataException is thrown
+     * @date 016-01-2025
+     * @param: ResponseEntity object
+     */
     @org.springframework.web.bind.annotation.ExceptionHandler(InvalidDataException.class)
     public ResponseEntity<InvalidDataException> handleInvalidDataException(InvalidDataException invalidDataException){
         Exception exception = new Exception(
@@ -67,6 +91,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler{
         return new ResponseEntity(exception, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * @auther Emmanuel Yidana
+     * @description: this method is triggered when UnAuthorizedException is thrown
+     * @date 016-01-2025
+     * @param: ResponseEntity object
+     */
     @org.springframework.web.bind.annotation.ExceptionHandler(UnAuthorizedException.class)
     public ResponseEntity<InvalidDataException> handleUnAuthorizedException(UnAuthorizedException unAuthorizedException){
         Exception exception = new Exception(
