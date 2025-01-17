@@ -32,6 +32,6 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         responseData.put("token", token);
         ObjectMapper objectMapper = new ObjectMapper();
 //        response.getWriter().write(objectMapper.writeValueAsString(responseData));
-        response.sendRedirect("http://localhost:5000?token="+token);
+        response.sendRedirect("http://localhost:3000/homePage?token="+token);
     }
 }

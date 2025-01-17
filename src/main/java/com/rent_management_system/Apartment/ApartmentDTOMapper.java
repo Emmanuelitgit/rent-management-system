@@ -23,7 +23,6 @@ public class ApartmentDTOMapper {
                 apartment.getBedrooms(),
                 apartment.getBathrooms(),
                 apartment.getStatus(),
-                apartment.getFile(),
                 apartment.getDescription(),
                 new UserDataDTO(
                         apartment.getUser().getId(),
@@ -33,6 +32,7 @@ public class ApartmentDTOMapper {
                         apartment.getUser().getRole(),
                         apartment.getUser().getPhone()
                         ),
+                apartment.getApartmentFiles(),
                 apartment.getCreated_at(),
                 apartment.updated_at
         );

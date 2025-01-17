@@ -20,8 +20,6 @@ import java.util.List;
 @RequestMapping("/api")
 public class ApartmentController {
     private final ApartmentService apartmentService;
-    private final String FILE_BASEURL_PROD = "https://rent-management-system-uyyb.onrender.com/";
-    private final String FILE_BASEURL_DEV = " http://localhost:5000/";
 
     @Autowired
     public ApartmentController(ApartmentService apartmentService) {
@@ -33,14 +31,6 @@ public class ApartmentController {
         log.info("In fetch apartments method:============");
         List<ApartmentDTO> apartmentDTOList = apartmentService.getApartmentList();
         return ResponseHandler.responseBuilder("Apartment list", apartmentDTOList, HttpStatus.OK);
-    }
-
-    private String getFileString(MultipartFile[] files){
-        var fileName = "";
-        for (MultipartFile file : files){
-            fileName = file.getOriginalFilename();
-        }
-        return fileName;
     }
 
     /**
@@ -60,32 +50,21 @@ public class ApartmentController {
             @RequestParam("description") String description,
             @PathVariable Long id
     ) throws IOException {
-
-        for(MultipartFile file:filePayload){
-            String STORAGE = "uploads";
-            File fileData = new File(STORAGE + File.separator + file.getOriginalFilename());
-            File uploadsDir = new File(STORAGE);
-            if (!uploadsDir.exists()) {
-                uploadsDir.mkdirs();
-            }
-            Files.copy(file.getInputStream(), fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        }
-
+        saveFile(filePayload);
         Apartment apartment = new Apartment();
         apartment.setName(name);
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
         apartment.setStatus(status);
-        apartment.setFile(FILE_BASEURL_PROD+getFileString(filePayload));
         apartment.setDescription(description);
         log.info("In create apartment method:===========");
-        ApartmentDTO apartmentDTO = apartmentService.createApartment(apartment, id);
+        ApartmentDTO apartmentDTO = apartmentService.createApartment(apartment, id, filePayload);
         return ResponseHandler.responseBuilder("Apartment created successfully", apartmentDTO, HttpStatus.CREATED);
     }
 
     /**
      * @auther Emmanuel Yidana
-     * @description: A method to get apartment by id
+     * @description A method to get apartment by id
      * @date 016-01-2025.
      * @param: id
      * @return apartment object
@@ -105,8 +84,23 @@ public class ApartmentController {
      * @return updated apartment object
      */
     @PostMapping("/update-apartment/{id}")
-    public ResponseEntity<Object> updateApartmentById(@RequestBody Apartment apartment, @PathVariable Long id){
-        ApartmentDTO apartmentDTO = apartmentService.updateApartmentById(apartment, id);
+    public ResponseEntity<Object> updateApartmentById(
+            @RequestParam("name") String name,
+            @RequestParam("bedrooms") int bedrooms,
+            @RequestParam("bathrooms") int bathrooms,
+            @RequestParam("status") ApartmentStatus status,
+            @RequestParam("file") MultipartFile[] filePayload,
+            @RequestParam("description") String description,
+            @PathVariable Long id
+    ) throws IOException {
+        saveFile(filePayload);
+        Apartment apartment = new Apartment();
+        apartment.setName(name);
+        apartment.setBedrooms(bedrooms);
+        apartment.setBathrooms(bathrooms);
+        apartment.setStatus(status);
+        apartment.setDescription(description);
+        ApartmentDTO apartmentDTO = apartmentService.updateApartmentById(apartment, filePayload, id);
         return ResponseHandler.responseBuilder("Apartment updated successfully", apartmentDTO, HttpStatus.OK);
     }
 
@@ -121,5 +115,17 @@ public class ApartmentController {
     public ResponseEntity<Object> removeApartmentById(@PathVariable Long id){
         apartmentService.removeApartmentById(id);
         return ResponseHandler.responseBuilder("Apartment deleted successfully", null, HttpStatus.OK);
+    }
+
+    private void saveFile(MultipartFile[] files) throws IOException {
+        for(MultipartFile file:files){
+            String STORAGE = "uploads";
+            File fileData = new File(STORAGE + File.separator + file.getOriginalFilename());
+            File uploadsDir = new File(STORAGE);
+            if (!uploadsDir.exists()) {
+                uploadsDir.mkdirs();
+            }
+            Files.copy(file.getInputStream(), fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 }

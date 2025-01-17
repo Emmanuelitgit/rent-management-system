@@ -33,7 +33,6 @@ public class Apartment {
     public int bathrooms;
     @Enumerated(EnumType.STRING)
     public ApartmentStatus status;
-    public String file;
     public String description;
     @UpdateTimestamp
     @Column(updatable = false)
@@ -47,6 +46,6 @@ public class Apartment {
     @ManyToMany(mappedBy = "apartment", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<RentInfo> rentInfo;
-    @OneToMany(mappedBy = "apartment",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "apartment",cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     public List<ApartmentFile> apartmentFiles;
 }
