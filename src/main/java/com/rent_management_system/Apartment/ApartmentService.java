@@ -63,7 +63,6 @@ public class ApartmentService implements ApartmentServiceInterface {
          }
 
          apartment.setApartmentFiles(apartmentFiles);
-
          User user = userOptional.get();
          apartment.setUser(user);
          user.getApartment().add(apartment);
@@ -116,26 +115,41 @@ public class ApartmentService implements ApartmentServiceInterface {
      * @return updated apartment object
      */
     @Override
-    public ApartmentDTO updateApartmentById(Apartment payload, MultipartFile[] files, Long id) {
+    @Transactional
+    public ApartmentDTO updateApartmentById(Apartment apartment, MultipartFile[] files, Long id) {
         Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
         if (apartmentOptional.isEmpty()){
             throw new NotFoundException("Apartment not found");
         }
-        Optional<ApartmentFile> apartmentFileOptional = apartmentFileRepository.findApartmentFileByApartment_Id(apartmentOptional.get().getId());
-        if (apartmentOptional.isEmpty()){
+
+        Optional<List<ApartmentFile>> apartmentFileOptional = apartmentFileRepository
+                .findApartmentFilesByApartment_Id(apartmentOptional.get().getId());
+
+        if (apartmentFileOptional.isEmpty()){
             throw new NotFoundException("Apartment file not found");
         }
-//        ApartmentFile apartmentFiles = apartmentFileOptional.get().getFile();
+        List<ApartmentFile> apartmentFiles = new ArrayList<>();
+
+        for (MultipartFile filePayload : files) {
+            List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.get();
+            for (ApartmentFile apartmentFile:existingApartmentFiles){
+                log.info(apartmentFile.getFile());
+                apartmentFile.setFile(FILE_BASEURL_DEV+filePayload.getOriginalFilename());
+                apartmentFile.setApartment(apartment);
+                apartmentFiles.add(apartmentFile);
+                apartmentFileRepository.save(apartmentFile);
+            }
+        }
 
         Apartment existingApartment = apartmentOptional.get();
-        existingApartment.setName(payload.getName());
-        existingApartment.setBathrooms(payload.getBathrooms());
-        existingApartment.setBedrooms(payload.getBedrooms());
-        existingApartment.setDescription(payload.getDescription());
-        existingApartment.setStatus(payload.getStatus());
+        existingApartment.setName(apartment.getName());
+        existingApartment.setBathrooms(apartment.getBathrooms());
+        existingApartment.setBedrooms(apartment.getBedrooms());
+        existingApartment.setDescription(apartment.getDescription());
+        existingApartment.setStatus(apartment.getStatus());
+        existingApartment.setApartmentFiles(apartmentFiles);
 
-
-        apartmentRepository.save(existingApartment);
+//        apartmentRepository.save(existingApartment);
         return ApartmentDTOMapper.toDTO(existingApartment);
 
     }
