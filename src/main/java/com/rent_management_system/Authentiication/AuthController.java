@@ -10,6 +10,7 @@ import com.rent_management_system.Exception.InvalidDataException;
 import com.rent_management_system.User.User;
 import com.rent_management_system.User.UserRepository;
 import com.rent_management_system.Response.ResponseHandler;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -83,7 +84,7 @@ public class AuthController {
      * @return user object including a token
      */
     @PostMapping("/authenticate")
-    public ResponseEntity<Object> authenticateUser(@RequestBody User user, HttpSession session){
+    public ResponseEntity<Object> authenticateUser(@RequestBody User user, HttpServletResponse response){
         log.info("In authenticate method:===========");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 user.getEmail(),
@@ -95,6 +96,13 @@ public class AuthController {
         if (authentication.isAuthenticated()){
            Object data = getUserDetails(user);
            log.info("Authenticated successfully:============");
+           // setting token in a cookie
+            Cookie cookie = new Cookie("token",jwtAccess.generateToken(user.getEmail()));
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(100);
+            response.addCookie(cookie);
+
             return ResponseHandler.responseBuilder("authenticated", data, HttpStatus.OK);
         }else{
             throw  new UnAuthorizedException("Invalid credentials");

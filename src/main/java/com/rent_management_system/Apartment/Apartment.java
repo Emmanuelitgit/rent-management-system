@@ -31,6 +31,8 @@ public class Apartment {
     public int bedrooms;
     @NotNull(message = "Number of bath rooms is required")
     public int bathrooms;
+    public int price;
+    public boolean isKitchenPart;
     @Enumerated(EnumType.STRING)
     public ApartmentStatus status;
     public String description;
@@ -46,6 +48,6 @@ public class Apartment {
     @ManyToMany(mappedBy = "apartment", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<RentInfo> rentInfo;
-    @OneToMany(mappedBy = "apartment",cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "apartment",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     public List<ApartmentFile> apartmentFiles;
 }

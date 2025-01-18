@@ -1,7 +1,7 @@
 package com.rent_management_system.Apartment;
 
-import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.Response.ResponseHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ public class ApartmentController {
     }
 
     @GetMapping("/apartment-list")
-    public ResponseEntity<Object> getApartmentList(){
+    public ResponseEntity<Object> getApartmentList(HttpServletResponse response){
         log.info("In fetch apartments method:============");
         List<ApartmentDTO> apartmentDTOList = apartmentService.getApartmentList();
         return ResponseHandler.responseBuilder("Apartment list", apartmentDTOList, HttpStatus.OK);
@@ -45,6 +45,8 @@ public class ApartmentController {
             @RequestParam("name") String name,
             @RequestParam("bedrooms") int bedrooms,
             @RequestParam("bathrooms") int bathrooms,
+            @RequestParam("price") int price,
+            @RequestParam("isKitchenPart") boolean isKitchenPart,
             @RequestParam("status") ApartmentStatus status,
             @RequestParam("file") MultipartFile[] filePayload,
             @RequestParam("description") String description,
@@ -56,6 +58,8 @@ public class ApartmentController {
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
         apartment.setStatus(status);
+        apartment.setKitchenPart(isKitchenPart);
+        apartment.setPrice(price);
         apartment.setDescription(description);
         log.info("In create apartment method:===========");
         ApartmentDTO apartmentDTO = apartmentService.createApartment(apartment, id, filePayload);
@@ -88,6 +92,8 @@ public class ApartmentController {
             @RequestParam("name") String name,
             @RequestParam("bedrooms") int bedrooms,
             @RequestParam("bathrooms") int bathrooms,
+            @RequestParam("price") int price,
+            @RequestParam("isKitchenPart") boolean isKitchenPart,
             @RequestParam("status") ApartmentStatus status,
             @RequestParam("file") MultipartFile[] filePayload,
             @RequestParam("description") String description,
@@ -99,6 +105,8 @@ public class ApartmentController {
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
         apartment.setStatus(status);
+        apartment.setKitchenPart(isKitchenPart);
+        apartment.setPrice(price);
         apartment.setDescription(description);
         ApartmentDTO apartmentDTO = apartmentService.updateApartmentById(apartment, filePayload, id);
         return ResponseHandler.responseBuilder("Apartment updated successfully", apartmentDTO, HttpStatus.OK);

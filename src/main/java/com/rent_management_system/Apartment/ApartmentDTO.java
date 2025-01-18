@@ -20,6 +20,8 @@ public class ApartmentDTO {
     public int bedrooms;
     public int bathrooms;
     public ApartmentStatus status;
+    public int price;
+    public boolean isKitchenPart;
     public String description;
     public UserDataDTO user;
     public List<ApartmentFile> apartmentFiles;

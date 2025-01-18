@@ -128,16 +128,14 @@ public class ApartmentService implements ApartmentServiceInterface {
         if (apartmentFileOptional.isEmpty()){
             throw new NotFoundException("Apartment file not found");
         }
+
         List<ApartmentFile> apartmentFiles = new ArrayList<>();
 
         for (MultipartFile filePayload : files) {
             List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.get();
             for (ApartmentFile apartmentFile:existingApartmentFiles){
-                log.info(apartmentFile.getFile());
                 apartmentFile.setFile(FILE_BASEURL_DEV+filePayload.getOriginalFilename());
-                apartmentFile.setApartment(apartment);
                 apartmentFiles.add(apartmentFile);
-                apartmentFileRepository.save(apartmentFile);
             }
         }
 
@@ -148,8 +146,8 @@ public class ApartmentService implements ApartmentServiceInterface {
         existingApartment.setDescription(apartment.getDescription());
         existingApartment.setStatus(apartment.getStatus());
         existingApartment.setApartmentFiles(apartmentFiles);
+        apartmentRepository.save(existingApartment);
 
-//        apartmentRepository.save(existingApartment);
         return ApartmentDTOMapper.toDTO(existingApartment);
 
     }
