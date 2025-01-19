@@ -16,7 +16,6 @@ public class WebHookController {
     @PostMapping("/webhook")
     public void handleWebhook(@RequestBody Map<String, Object> payload) {
         // Log or process the webhook event here
-        System.out.println("Received webhook: " + payload);
         log.info("Received webhook{}", payload);
     }
 }
