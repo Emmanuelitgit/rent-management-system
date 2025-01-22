@@ -4,6 +4,7 @@ import com.rent_management_system.Exception.NotFoundException;
 import com.rent_management_system.RentInfo.RentInfo;
 import com.rent_management_system.RentInfo.RentInfoRepository;
 import com.rent_management_system.User.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class PaymentService {
 
@@ -95,6 +97,7 @@ public class PaymentService {
      * @date 21-01-2025
      */
     public void processSuccessfulPayment(Map<String, Object> data) {
+        log.info("DATA RECEIVED IN SERVICE LAYER:{}", data);
         String reference = (String) data.get("reference");
         Integer amount = (Integer) data.get("amount");
         String currency = (String) data.get("currency");
