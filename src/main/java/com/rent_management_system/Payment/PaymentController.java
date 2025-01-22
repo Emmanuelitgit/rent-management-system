@@ -30,9 +30,9 @@ public class PaymentController {
      * @date 21-01-2025
      * @return PaymentResponse
      */
-    @PostMapping("/initialize")
-    public PaymentResponse initializeTransaction(@Valid @RequestBody PaymentRequest paymentRequest){
-        return paymentService.initializeTransaction(paymentRequest);
+    @PostMapping("/initialize/{rentInfoId}")
+    public PaymentResponse initializeTransaction(@Valid @RequestBody PaymentRequest paymentRequest, @PathVariable Long rentInfoId){
+        return paymentService.initializeTransaction(paymentRequest, rentInfoId);
     }
 
     /**

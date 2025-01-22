@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,20 +46,28 @@ public class PaymentService {
      * @date 21-01-2025
      * @return PaymentResponse
      */
-    public PaymentResponse initializeTransaction(PaymentRequest request) {
+    public PaymentResponse initializeTransaction(PaymentRequest request, Long rentInfoId) {
         String url = baseUrl + "/transaction/initialize";
+
+        Optional<RentInfo> rentInfoOptional = rentInfoRepository.findById(rentInfoId);
+        if (rentInfoOptional.isEmpty()){
+            throw new NotFoundException("No rent info associated with the provided Id");
+        }
+        RentInfo rentInfo = rentInfoOptional.get();
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("rentInfoId", rentInfo.getId());
+        request.setMetadata(metadata);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(secretKey);
 
-        HttpEntity<PaymentRequest> entity = new HttpEntity<>(request, headers);
-
+        HttpEntity<Object> entity = new HttpEntity<>(request, headers);
+        log.info("ENTITY:{}", entity);
         ResponseEntity<PaymentResponse> response = restTemplate.postForEntity(url, entity, PaymentResponse.class);
 
         return response.getBody();
     }
-
 
     /**
      * @auther Emmanuel Yidana

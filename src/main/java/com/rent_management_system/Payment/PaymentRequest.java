@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,4 +17,5 @@ public class PaymentRequest {
     public String email;
     @NotNull(message = "Amount is required")
     public String amount;
+    public Map<String, Object> metadata;
 }
