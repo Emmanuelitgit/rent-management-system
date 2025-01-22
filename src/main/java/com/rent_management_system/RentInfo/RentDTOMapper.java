@@ -22,8 +22,6 @@ public class RentDTOMapper {
     public static RentInfoDTO toDTO(RentInfo rentInfo){
         return new RentInfoDTO(
                 rentInfo.getId(),
-                rentInfo.getStatus(),
-                rentInfo.getPaymentMethod(),
                 new UserDataDTO(
                         rentInfo .getUser().getId(),
                         rentInfo .getUser().getFirstName(),

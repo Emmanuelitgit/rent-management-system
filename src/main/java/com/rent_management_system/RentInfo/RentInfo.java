@@ -25,11 +25,6 @@ public class RentInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PaymentStatus status;
-    @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

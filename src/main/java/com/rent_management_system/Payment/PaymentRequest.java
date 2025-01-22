@@ -13,7 +13,6 @@ import lombok.Data;
 public class PaymentRequest {
     @NotBlank(message = "Email is required")
     public String email;
-    public Customer customer;
     @NotNull(message = "Amount is required")
     public String amount;
 }

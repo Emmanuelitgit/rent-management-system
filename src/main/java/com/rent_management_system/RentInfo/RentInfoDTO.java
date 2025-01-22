@@ -16,8 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 public class RentInfoDTO {
     public Long id;
-    public PaymentStatus paymentStatus;
-    public PaymentMethod paymentMethod;
     public UserDataDTO user;
     public List<Apartment> apartmentList;
     public LocalDateTime createdAt;

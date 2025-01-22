@@ -122,7 +122,7 @@ public class PaymentService {
         payment.setAmount(amount);
         payment.setChannel(channel);
         payment.setCurrency(currency);
-        payment.setStatus(status);
+        payment.setStatus("PAID");
         payment.setReference(reference);
         payment.setTransactionDate(paidAt);
         payment.setUser(user);
