@@ -1,7 +1,9 @@
 package com.rent_management_system.RentInfo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rent_management_system.Apartment.Apartment;
+import com.rent_management_system.Payment.Payment;
 import com.rent_management_system.User.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +30,11 @@ public class RentInfo {
     private PaymentStatus status;
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -38,9 +45,7 @@ public class RentInfo {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<Apartment> apartment;
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    public Payment payment;
 }
