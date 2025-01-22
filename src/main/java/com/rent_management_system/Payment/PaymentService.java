@@ -97,7 +97,6 @@ public class PaymentService {
      * @date 21-01-2025
      */
     public void processSuccessfulPayment(Map<String, Object> data) {
-        log.info("DATA RECEIVED IN SERVICE LAYER:{}", data);
         String reference = (String) data.get("reference");
         Integer amount = (Integer) data.get("amount");
         String currency = (String) data.get("currency");
@@ -112,6 +111,8 @@ public class PaymentService {
         if (rentInfoOptional.isEmpty()){
             throw new NotFoundException("No rentInfo associated with the provided user");
         }
+
+        log.info("DATA RECEIVED IN SERVICE LAYER:{},{},{},{},{},{},{}", email, amount, currency, status,paidAt, channel,reference);
 
         User user = rentInfoOptional.get().getUser();
         RentInfo rentInfo = rentInfoOptional.get();
