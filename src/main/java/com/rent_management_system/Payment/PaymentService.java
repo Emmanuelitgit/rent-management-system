@@ -106,13 +106,14 @@ public class PaymentService {
 
         Map<String, Object> customer = (Map<String, Object>) data.get("customer");
         String email = (String) customer.get("email");
+
+        log.info("EMAIL:{}", email);
+        log.info("AMOUNT:{}", amount);
         // load rent info by the user email
         Optional<RentInfo> rentInfoOptional = rentInfoRepository.findRentInfoByUser_Email(email);
         if (rentInfoOptional.isEmpty()){
             throw new NotFoundException("No rentInfo associated with the provided user");
         }
-
-        log.info("DATA RECEIVED IN SERVICE LAYER:{},{},{},{},{},{},{}", email, amount, currency, status,paidAt, channel,reference);
 
         User user = rentInfoOptional.get().getUser();
         RentInfo rentInfo = rentInfoOptional.get();

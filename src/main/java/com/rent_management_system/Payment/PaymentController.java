@@ -55,20 +55,17 @@ public class PaymentController {
      * @return responseEntity object
      */
     @PostMapping("/webhook")
-    public ResponseEntity<Object> handleWebhook(@RequestBody Map<String, Object> payload) {
-        try {
-            String event = (String) payload.get("event");
+    public ResponseEntity<HttpStatus> handleWebhook(@RequestBody Map<String, Object> payload) {
+        log.info("DATA RECEIVED IN CONTROLLER:{}", payload);
 
-            Map<String, Object> data = (Map<String, Object>) payload.get("data");
-            log.info("DATA RECEIVED IN CONTROLLER:{}", data);
-            if ("charge.success".equals(event)) {
-                paymentService.processSuccessfulPayment(data);
-            }
+        String event = (String) payload.get("event");
 
-            return ResponseEntity.status(200).body(payload);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing webhook");
+        Map<String, Object> data = (Map<String, Object>) payload.get("data");
+        if ("charge.success".equals(event)) {
+            paymentService.processSuccessfulPayment(data);
         }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
