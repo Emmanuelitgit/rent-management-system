@@ -112,14 +112,16 @@ public class PaymentService {
         String status = (String) data.get("status");
         String paidAt = (String) data.get("paid_at");
         String channel = (String) data.get("channel");
+        Map<String, Object> metadata = (Map<String, Object>) data.get("metadata");
+        Long rentInfoId = (Long) metadata.get("rentInfoId");
 
         Map<String, Object> customer = (Map<String, Object>) data.get("customer");
         String email = (String) customer.get("email");
 
         log.info("EMAIL:{}", email);
         log.info("AMOUNT:{}", amount);
-        // load rent info by the user email
-        Optional<RentInfo> rentInfoOptional = rentInfoRepository.findRentInfoByUser_Email(email);
+        // load rent info by rentInfoId
+        Optional<RentInfo> rentInfoOptional = rentInfoRepository.findById(rentInfoId);
         if (rentInfoOptional.isEmpty()){
             throw new NotFoundException("No rentInfo associated with the provided user");
         }

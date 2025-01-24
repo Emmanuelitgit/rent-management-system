@@ -75,7 +75,7 @@ public class ApartmentController {
      */
     @GetMapping("/apartment/{id}")
     public ResponseEntity<Object> getApartmentById(@PathVariable Long id){
-        log.info("In get apartment by id:============");
+        log.info("In get apartment by id:{}");
         ApartmentDTO apartmentDTO = apartmentService.getApartmentById(id);
         return ResponseHandler.responseBuilder("Apartment details", apartmentDTO, HttpStatus.OK);
     }
