@@ -113,10 +113,8 @@ public class PaymentService {
         String paidAt = (String) data.get("paid_at");
         String channel = (String) data.get("channel");
         Map<String, Object> metadata = (Map<String, Object>) data.get("metadata");
-        Long rentInfoId = (Long) metadata.get("rentInfoId");
-
-        Map<String, Object> customer = (Map<String, Object>) data.get("customer");
-        String email = (String) customer.get("email");
+        String rentInfoIdStr = (String) metadata.get("rentInfoId"); // Get the value as a String
+        Long rentInfoId = Long.parseLong(rentInfoIdStr); // Convert it to Long
 
         // load rent info by rentInfoId
         Optional<RentInfo> rentInfoOptional = rentInfoRepository.findById(rentInfoId);
