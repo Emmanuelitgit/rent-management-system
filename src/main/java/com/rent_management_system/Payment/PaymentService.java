@@ -118,8 +118,6 @@ public class PaymentService {
         Map<String, Object> customer = (Map<String, Object>) data.get("customer");
         String email = (String) customer.get("email");
 
-        log.info("EMAIL:{}", email);
-        log.info("AMOUNT:{}", amount);
         // load rent info by rentInfoId
         Optional<RentInfo> rentInfoOptional = rentInfoRepository.findById(rentInfoId);
         if (rentInfoOptional.isEmpty()){
