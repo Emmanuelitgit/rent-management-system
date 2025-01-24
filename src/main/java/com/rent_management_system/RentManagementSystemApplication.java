@@ -8,7 +8,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @SpringBootApplication
 @EnableJpaAuditing
 public class RentManagementSystemApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(RentManagementSystemApplication.class, args);
 	}
