@@ -32,22 +32,20 @@ import java.util.Optional;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final OTP.JWTAccess jwtAccess;
+    private final JWTAccess jwtAccess;
     private final UserRepository userRepository;
     private final OTPRepository otpRepository;
-    private final OTP.OTPComponent OTPComponent;
     private final OTPService otpService;
-    private final OTP.OTPComponent otpComponent;
+    private final OTPComponent otpComponent;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, OTP.JWTAccess jwtAccess, UserRepository userRepository, UserRepository userRepository1, OTPRepository otpRepository, OTP.OTPComponent OTPComponent, OTPService otpService, OTP.OTPComponent otpComponent) {
+    public AuthController(AuthenticationManager authenticationManager, JWTAccess jwtAccess, UserRepository userRepository, OTPRepository otpRepository, OTPService otpService, OTPComponent otpComponent) {
         this.authenticationManager = authenticationManager;
         this.jwtAccess = jwtAccess;
-        this.userRepository = userRepository1;
         this.otpRepository = otpRepository;
-        this.OTPComponent = OTPComponent;
         this.otpService = otpService;
         this.otpComponent = otpComponent;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -88,7 +86,7 @@ public class AuthController {
         );
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        OTPComponent.verifyUserOTPStatusDuringLogin(user.getEmail());
+        otpComponent.verifyUserOTPStatusDuringLogin(user.getEmail());
         if (authentication.isAuthenticated()){
            Object data = getUserDetails(user);
            log.info("Authenticated successfully:============");
@@ -142,7 +140,7 @@ public class AuthController {
     @PostMapping("/verify-email")
     public ResponseEntity<Object> verifyEmail(@Valid @RequestBody OTPVerifyPayload payload){
         log.info("In verify otp method:=================");
-        OTPComponent.verifyOtp(payload.email, payload.otp);
+        otpComponent.verifyOtp(payload.email, payload.otp);
         log.info("OTP verified successfully:==============");
         return ResponseHandler.responseBuilder("verified successfully", true, HttpStatus.OK);
     }

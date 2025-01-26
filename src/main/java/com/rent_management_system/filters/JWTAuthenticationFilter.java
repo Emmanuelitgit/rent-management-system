@@ -1,6 +1,6 @@
 package com.rent_management_system.filters;
 
-import com.rent_management_system.authentication.OTP;
+import com.rent_management_system.authentication.JWTAccess;
 import com.rent_management_system.configurations.UserDetailsService;
 import com.rent_management_system.exception.UnAuthorizedException;
 import jakarta.servlet.FilterChain;
@@ -19,11 +19,12 @@ import java.io.IOException;
 
 @Configuration
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
-    private final OTP.JWTAccess jwtAccess;
+
+    private final JWTAccess jwtAccess;
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    public JWTAuthenticationFilter(OTP.JWTAccess jwtAccess, UserDetailsService userDetailsService) {
+    public JWTAuthenticationFilter(JWTAccess jwtAccess, UserDetailsService userDetailsService) {
         this.jwtAccess = jwtAccess;
         this.userDetailsService = userDetailsService;
     }

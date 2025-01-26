@@ -1,10 +1,12 @@
 package com.rent_management_system.configurations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rent_management_system.authentication.JWTAccess;
 import com.rent_management_system.authentication.OTP;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -16,7 +18,9 @@ import java.util.Map;
 
 @Configuration
 public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-    private final OTP.JWTAccess jwtAccess = new OTP.JWTAccess();
+
+    @Autowired
+    private JWTAccess jwtAccess;
 
     /**
      * @auther Emmanuel Yidana

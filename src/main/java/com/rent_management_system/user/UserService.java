@@ -1,5 +1,6 @@
 package com.rent_management_system.user;
 
+import com.rent_management_system.authentication.OTPComponent;
 import com.rent_management_system.exception.InvalidDataException;
 import com.rent_management_system.exception.NotFoundException;
 import com.rent_management_system.authentication.OTP;
@@ -21,10 +22,10 @@ public class UserService implements UserInterface {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserDTOMapper userDTOMapper;
-    private final OTP.OTPComponent otpComponent;
+    private final OTPComponent otpComponent;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserDTOMapper userDTOMapper, OTP.OTPComponent otpComponent) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserDTOMapper userDTOMapper, OTPComponent otpComponent) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userDTOMapper = userDTOMapper;
