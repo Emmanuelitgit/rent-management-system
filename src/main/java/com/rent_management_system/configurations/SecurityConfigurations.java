@@ -1,5 +1,6 @@
 package com.rent_management_system.configurations;
 
+import com.rent_management_system.authentication.JWTAccess;
 import com.rent_management_system.filters.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
