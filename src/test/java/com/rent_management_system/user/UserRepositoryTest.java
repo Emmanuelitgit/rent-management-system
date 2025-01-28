@@ -30,7 +30,6 @@ public class UserRepositoryTest {
 
     @BeforeEach
     public void initialization(){
-        user.setId(1L);
         user.setRole("USER");
         user.setEmail("eyidana003@gmail.com");
         user.setPassword("1234");
@@ -41,7 +40,7 @@ public class UserRepositoryTest {
 
     @Test
     @Order(1)
-    @DisplayName("Test 1")
+    @DisplayName("createUser Test")
     @Rollback()
     public void createUserShouldReturnUserObject(){
         User saveUser = userRepository.save(user);

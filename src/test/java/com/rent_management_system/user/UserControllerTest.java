@@ -1,16 +1,20 @@
 package com.rent_management_system.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rent_management_system.authentication.OTPComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -29,8 +33,12 @@ public class UserControllerTest {
 
     private MockMvc mockMvc;
 
-    @Mock
+    @Spy
     private UserService userService;
+    @Mock
+    private OTPComponent otpComponent;
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private UserController userController;
@@ -47,7 +55,7 @@ public class UserControllerTest {
         // user initialization
         user.setId(1L);
         user.setRole("USER");
-        user.setEmail("eyidana003@gmail.com");
+        user.setEmail("eyidana001@gmail.com");
         user.setPassword("1234");
         user.setFirstName("Emmanuel");
         user.setLastName("Yidana");
@@ -56,7 +64,7 @@ public class UserControllerTest {
         // userDTO initialization
         userDTO.setId(1L);
         userDTO.setRole("USER");
-        userDTO.setEmail("eyidana003@gmail.com");
+        userDTO.setEmail("eyidana001@gmail.com");
         userDTO.setFirstName("Emmanuel");
         userDTO.setLastName("Yidana");
         userDTO.setPhone(89380L);
@@ -66,13 +74,14 @@ public class UserControllerTest {
     @Order(1)
     @DisplayName("createUserController Test")
     public void createUserControllerShouldRunSuccessfully() throws Exception {
-        given(userService.createUser(any(User.class))).willReturn(userDTO);
+//        given(userService.createUser(user)).willReturn(userDTO);
+        given(userRepository.findUserByEmail("eyidana001@gmail.com")).willReturn(Optional.of(user));
+        given(userRepository.save(user)).willReturn(user);
 
-        ResultActions response = mockMvc.perform(post("/api/create-user")
+        mockMvc.perform(post("/api/create-user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)));
-
-        response.andDo(print())
+                .content(objectMapper.writeValueAsString(user)))
+                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.firstName", is(user.getFirstName())))
                 .andExpect(jsonPath("$.data.lastName", is(user.getLastName())))

@@ -4,6 +4,7 @@ import com.rent_management_system.authentication.OTPComponent;
 import com.rent_management_system.exception.InvalidDataException;
 import com.rent_management_system.exception.NotFoundException;
 import com.rent_management_system.authentication.OTP;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@NoArgsConstructor(force = true)
 public class UserService implements UserInterface {
     private final long MINUTES = TimeUnit.MINUTES.toMillis(5);
     private final UserRepository userRepository;
@@ -75,7 +77,7 @@ public class UserService implements UserInterface {
         user.setRole(user.getRole().toUpperCase());
         OTP otpDetails = otpDetails(user);
         user.setOtp(otpDetails);
-        otpComponent.sendOTP(user.getEmail(), otpDetails.getOtp(), user.getFirstName());
+//        otpComponent.sendOTP(user.getEmail(), otpDetails.getOtp(), user.getFirstName());
         userRepository.save(user);
         return UserDTOMapper.toDTO(user);
     }
