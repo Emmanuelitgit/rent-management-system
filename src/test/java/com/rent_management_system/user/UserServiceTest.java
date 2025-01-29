@@ -19,8 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +44,7 @@ public class UserServiceTest {
     public void initialization(){
         user.setId(1L);
         user.setRole("USER");
-        user.setEmail("eyidana003@gmail.com");
+        user.setEmail("eyidana001@gmail.com");
         user.setPassword(passwordEncoder.encode("1234"));
         user.setFirstName("Emmanuel");
         user.setLastName("Yidana");
@@ -56,7 +55,7 @@ public class UserServiceTest {
     @Order(1)
     @DisplayName("Create user Test")
     public void createUserShouldReturnUserObject(){
-        Mockito.when(userRepository.save(user)).thenReturn(user);
+        when(userRepository.save(user)).thenReturn(user);
 
         UserDTO addedUser = userService.createUser(user);
         log.info("Added user data:{}", addedUser);
