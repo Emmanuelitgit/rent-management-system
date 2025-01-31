@@ -39,6 +39,7 @@ public class UserServiceTest {
     UserService userService;
 
     private final User user = new User();
+    private final UserDTO  userDTO = new UserDTO();
 
     @BeforeEach
     public void initialization(){
@@ -49,6 +50,13 @@ public class UserServiceTest {
         user.setFirstName("Emmanuel");
         user.setLastName("Yidana");
         user.setPhone(89380L);
+
+        userDTO.setId(1L);
+        userDTO.setRole("USER");
+        userDTO.setEmail("eyidana003@gmail.com");
+        userDTO.setFirstName("Emmanuel");
+        userDTO.setLastName("Yidana");
+        userDTO.setPhone(89380L);
     }
 
     @Test
@@ -89,15 +97,8 @@ public class UserServiceTest {
     @Order(4)
     @DisplayName("fetchAllUsers Test")
     public void findAllUsersShouldReturnListOfUsers(){
-        UserDTO user1 = new UserDTO();
-        user1.setId(1L);
-        user1.setRole("USER");
-        user1.setEmail("eyidana003@gmail.com");
-        user1.setFirstName("Emmanuel");
-        user1.setLastName("Yidana");
-        user1.setPhone(89380L);
         given(userRepository.findAll()).willReturn(List.of(user));
-        given(userDTOMapper.userDTOList(List.of(user))).willReturn(List.of(user1));
+        given(userDTOMapper.userDTOList(List.of(user))).willReturn(List.of(userDTO));
         List<UserDTO> users = userService.getUsers();
         log.info("users:{}", users);
         assertNotNull(users);

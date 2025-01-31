@@ -129,10 +129,11 @@ public class UserControllerTest {
     public void updateUserShouldReturnUserObject() throws Exception {
         given(userService.updateUserById(1L, user)).willReturn(userDTO);
 
-        mockMvc.perform(put("/api/update-user/{id}",1L)
+        mockMvc.perform(put("/api/update-user/"+1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                         .andExpect(status().is2xxSuccessful());
+
         verify(userService, times(1)).updateUserById(1L, user);
     }
 }

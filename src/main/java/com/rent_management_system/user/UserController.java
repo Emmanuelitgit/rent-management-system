@@ -85,10 +85,9 @@ public class UserController {
      * @return updated user object
      */
     @PutMapping("/update-user/{id}")
-    public ResponseEntity<Object> updateUserById(@PathVariable Long id, User user){
+    public ResponseEntity<Object> updateUserById(@PathVariable Long id, @RequestBody User user){
         log.info("In update user by Id method:======");
         UserDTO userDTO = userService.updateUserById(id, user);
         return ResponseHandler.responseBuilder("User updated successfully", userDTO, HttpStatus.OK);
     }
-
 }
