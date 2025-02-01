@@ -1,4 +1,6 @@
 package com.rent_management_system.apartment;
+import com.rent_management_system.apartmentAddress.ApartmentAddress;
+import com.rent_management_system.apartmentAddress.ApartmentAddressDTO;
 import com.rent_management_system.components.UserDataDTO;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -24,6 +26,15 @@ public class ApartmentDTOMapper {
                 apartment.getStatus(),
                 apartment.getPrice(),
                 apartment.isKitchenPart,
+                new ApartmentAddressDTO(
+                        apartment.getApartmentAddress().getId(),
+                        apartment.getApartmentAddress().getCity(),
+                        apartment.getApartmentAddress().getStreetAddress(),
+                        apartment.getApartmentAddress().getGpsAddress(),
+                        apartment.getApartmentAddress().getRegion()
+                ),
+                apartment.getApartmentFiles(),
+                apartment.getMainFile(),
                 apartment.getDescription(),
                 new UserDataDTO(
                         apartment.getUser().getId(),
@@ -32,10 +43,7 @@ public class ApartmentDTOMapper {
                         apartment.getUser().getEmail(),
                         apartment.getUser().getRole(),
                         apartment.getUser().getPhone()
-                        ),
-                apartment.getApartmentFiles(),
-                apartment.getCreated_at(),
-                apartment.updated_at
+                        )
         );
     }
 

@@ -1,5 +1,6 @@
 package com.rent_management_system.apartment;
 
+import com.rent_management_system.apartmentAddress.ApartmentAddress;
 import com.rent_management_system.response.ResponseHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -8,18 +9,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
+
 
 @Slf4j
 @RestController
 @RequestMapping("/api")
 public class ApartmentController {
     private final ApartmentService apartmentService;
+    private final Apartment apartment = new Apartment();
+    private final ApartmentAddress apartmentAddress = new ApartmentAddress();
 
     @Autowired
     public ApartmentController(ApartmentService apartmentService) {
@@ -40,7 +40,7 @@ public class ApartmentController {
      * @param: id, name, bedrooms, bathrooms, bathrooms, status, file, description
      * @return apartment object
      */
-    @PostMapping("/create-apartment/{id}")
+    @PostMapping("/create-apartment/{userId}")
     public ResponseEntity<Object> createApartment(
             @RequestParam("name") String name,
             @RequestParam("bedrooms") int bedrooms,
@@ -48,12 +48,18 @@ public class ApartmentController {
             @RequestParam("price") int price,
             @RequestParam("isKitchenPart") boolean isKitchenPart,
             @RequestParam("status") ApartmentStatus status,
-            @RequestParam("file") MultipartFile[] filePayload,
+            @RequestParam("additionalFiles") MultipartFile[] subFiles,
+            @RequestParam("mainFile") MultipartFile mainFile,
+            @RequestParam("city") String city,
+            @RequestParam("region") String region,
+            @RequestParam("gpsAddress") String gpsAddress,
+            @RequestParam("streetAddress") String streetAddress,
             @RequestParam("description") String description,
-            @PathVariable Long id
+            @PathVariable Long userId
     ) throws IOException {
-        saveFile(filePayload);
-        Apartment apartment = new Apartment();
+
+        log.info("In create apartment method:===========");
+
         apartment.setName(name);
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
@@ -61,8 +67,13 @@ public class ApartmentController {
         apartment.setKitchenPart(isKitchenPart);
         apartment.setPrice(price);
         apartment.setDescription(description);
-        log.info("In create apartment method:===========");
-        ApartmentDTO apartmentDTO = apartmentService.createApartment(apartment, id, filePayload);
+
+        apartmentAddress.setGpsAddress(gpsAddress);
+        apartmentAddress.setStreetAddress(streetAddress);
+        apartmentAddress.setRegion(region);
+        apartmentAddress.setCity(city);
+
+        ApartmentDTO apartmentDTO = apartmentService.createApartment(apartment, userId, mainFile, subFiles, apartmentAddress);
         return ResponseHandler.responseBuilder("Apartment created successfully", apartmentDTO, HttpStatus.CREATED);
     }
 
@@ -75,7 +86,7 @@ public class ApartmentController {
      */
     @GetMapping("/apartment/{id}")
     public ResponseEntity<Object> getApartmentById(@PathVariable Long id){
-        log.info("In get apartment by id:{}");
+        log.info("In get apartment by id==========");
         ApartmentDTO apartmentDTO = apartmentService.getApartmentById(id);
         return ResponseHandler.responseBuilder("Apartment details", apartmentDTO, HttpStatus.OK);
     }
@@ -95,12 +106,17 @@ public class ApartmentController {
             @RequestParam("price") int price,
             @RequestParam("isKitchenPart") boolean isKitchenPart,
             @RequestParam("status") ApartmentStatus status,
-            @RequestParam("file") MultipartFile[] filePayload,
+            @RequestParam("additionalFiles") MultipartFile[] subFiles,
+            @RequestParam("mainFile") MultipartFile mainFile,
+            @RequestParam("city") String city,
+            @RequestParam("region") String region,
+            @RequestParam("gpsAddress") String gpsAddress,
+            @RequestParam("streetAddress") String streetAddress,
             @RequestParam("description") String description,
             @PathVariable Long id
     ) throws IOException {
-        saveFile(filePayload);
-        Apartment apartment = new Apartment();
+
+        log.info("In update user by ID method:============");
         apartment.setName(name);
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
@@ -108,7 +124,14 @@ public class ApartmentController {
         apartment.setKitchenPart(isKitchenPart);
         apartment.setPrice(price);
         apartment.setDescription(description);
-        ApartmentDTO apartmentDTO = apartmentService.updateApartmentById(apartment, filePayload, id);
+
+        apartmentAddress.setGpsAddress(gpsAddress);
+        apartmentAddress.setStreetAddress(streetAddress);
+        apartmentAddress.setRegion(region);
+        apartmentAddress.setCity(city);
+
+        ApartmentDTO apartmentDTO = apartmentService.updateApartmentById(apartment, mainFile, subFiles, id, apartmentAddress);
+        log.info("Apartment updated successfully:============");
         return ResponseHandler.responseBuilder("Apartment updated successfully", apartmentDTO, HttpStatus.OK);
     }
 
@@ -125,15 +148,4 @@ public class ApartmentController {
         return ResponseHandler.responseBuilder("Apartment deleted successfully", null, HttpStatus.OK);
     }
 
-    private void saveFile(MultipartFile[] files) throws IOException {
-        for(MultipartFile file:files){
-            String STORAGE = "uploads";
-            File fileData = new File(STORAGE + File.separator + file.getOriginalFilename());
-            File uploadsDir = new File(STORAGE);
-            if (!uploadsDir.exists()) {
-                uploadsDir.mkdirs();
-            }
-            Files.copy(file.getInputStream(), fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        }
-    }
 }

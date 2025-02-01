@@ -1,5 +1,6 @@
 package com.rent_management_system.apartment;
 
+import com.rent_management_system.apartmentAddress.ApartmentAddress;
 import com.rent_management_system.exception.NotFoundException;
 import com.rent_management_system.fileManager.ApartmentFile;
 import com.rent_management_system.fileManager.ApartmentFileRepository;
@@ -11,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +30,7 @@ public class ApartmentService implements ApartmentServiceInterface {
     private final ApartmentFileRepository apartmentFileRepository;
     private final String FILE_BASEURL_PROD = "https://rent-management-system-uyyb.onrender.com/";
     private final String FILE_BASEURL_DEV = " http://localhost:5000/";
+    private final String STORAGE = "uploads";
 
     @Autowired
     public ApartmentService(ApartmentRepository apartmentRepository, UserRepository userRepository, ApartmentDTOMapper apartmentDTOMapper, ApartmentFileRepository apartmentFileRepository) {
@@ -44,13 +50,16 @@ public class ApartmentService implements ApartmentServiceInterface {
      */
      @Transactional
      @Override
-     public ApartmentDTO createApartment(Apartment apartment, Long id, MultipartFile[] files) {
-         Optional<User> userOptional = userRepository.findById(id);
+     public ApartmentDTO createApartment(Apartment apartment, Long userId, MultipartFile mainFile, MultipartFile[] files, ApartmentAddress apartmentAddress) throws IOException {
+         Optional<User> userOptional = userRepository.findById(userId);
          if (userOptional.isEmpty()) {
              throw new NotFoundException("User not found");
          }
 
          List<ApartmentFile> apartmentFiles = new ArrayList<>();
+
+         saveFiles(files);
+         saveFile(mainFile);
 
          for (MultipartFile filePayload : files) {
              ApartmentFile apartmentFile = new ApartmentFile();
@@ -61,6 +70,11 @@ public class ApartmentService implements ApartmentServiceInterface {
          }
 
          apartment.setApartmentFiles(apartmentFiles);
+         apartment.setMainFile(FILE_BASEURL_DEV+mainFile.getOriginalFilename());
+
+         apartment.setApartmentAddress(apartmentAddress);
+         apartmentAddress.setApartment(apartment);
+
          User user = userOptional.get();
          apartment.setUser(user);
          user.getApartment().add(apartment);
@@ -114,7 +128,7 @@ public class ApartmentService implements ApartmentServiceInterface {
      */
     @Override
     @Transactional
-    public ApartmentDTO updateApartmentById(Apartment apartment, MultipartFile[] files, Long id) {
+    public ApartmentDTO updateApartmentById(Apartment apartment, MultipartFile mainFile, MultipartFile[] files, Long id, ApartmentAddress apartmentAddress) throws IOException {
         Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
         if (apartmentOptional.isEmpty()){
             throw new NotFoundException("Apartment not found");
@@ -126,6 +140,9 @@ public class ApartmentService implements ApartmentServiceInterface {
         if (apartmentFileOptional.isEmpty()){
             throw new NotFoundException("Apartment file not found");
         }
+
+        saveFiles(files);
+        saveFile(mainFile);
 
         List<ApartmentFile> apartmentFiles = new ArrayList<>();
 
@@ -143,7 +160,13 @@ public class ApartmentService implements ApartmentServiceInterface {
         existingApartment.setBedrooms(apartment.getBedrooms());
         existingApartment.setDescription(apartment.getDescription());
         existingApartment.setStatus(apartment.getStatus());
+
         existingApartment.setApartmentFiles(apartmentFiles);
+        existingApartment.setMainFile(mainFile.getOriginalFilename());
+
+        apartment.setApartmentAddress(apartmentAddress);
+        apartmentAddress.setApartment(apartment);
+
         apartmentRepository.save(existingApartment);
 
         return ApartmentDTOMapper.toDTO(existingApartment);
@@ -171,5 +194,27 @@ public class ApartmentService implements ApartmentServiceInterface {
             user.setApartment(null);
         }
         apartmentRepository.deleteById(id);
+    }
+
+
+    private void saveFile(MultipartFile file) throws IOException {
+        File fileData = new File(STORAGE + File.separator + file.getOriginalFilename());
+        File uploadsDir = new File(STORAGE);
+        if (!uploadsDir.exists()) {
+            uploadsDir.mkdirs();
+        }
+        Files.copy(file.getInputStream(), fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+    }
+
+    private void saveFiles(MultipartFile[] files) throws IOException {
+        for(MultipartFile file:files){
+            File fileData = new File(STORAGE + File.separator + file.getOriginalFilename());
+            File uploadsDir = new File(STORAGE);
+            if (!uploadsDir.exists()) {
+                uploadsDir.mkdirs();
+            }
+            Files.copy(file.getInputStream(), fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 }

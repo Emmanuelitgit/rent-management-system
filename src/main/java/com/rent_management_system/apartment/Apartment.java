@@ -2,6 +2,7 @@ package com.rent_management_system.apartment;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rent_management_system.apartmentAddress.ApartmentAddress;
 import com.rent_management_system.fileManager.ApartmentFile;
 import com.rent_management_system.rentInfo.RentInfo;
 import com.rent_management_system.user.User;
@@ -41,6 +42,8 @@ public class Apartment {
     public LocalDateTime created_at;
     @UpdateTimestamp
     public LocalDateTime updated_at;
+//    @NotNull(message = "main file cannot be null")
+    public String mainFile;
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
@@ -50,4 +53,6 @@ public class Apartment {
     private List<RentInfo> rentInfo;
     @OneToMany(mappedBy = "apartment",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     public List<ApartmentFile> apartmentFiles;
+    @OneToOne(mappedBy = "apartment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private ApartmentAddress apartmentAddress;
 }

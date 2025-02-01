@@ -1,5 +1,7 @@
 package com.rent_management_system.apartment;
 
+import com.rent_management_system.apartmentAddress.ApartmentAddress;
+import com.rent_management_system.apartmentAddress.ApartmentAddressDTO;
 import com.rent_management_system.components.UserDataDTO;
 import com.rent_management_system.fileManager.ApartmentFile;
 import lombok.*;
@@ -20,9 +22,9 @@ public class ApartmentDTO {
     public ApartmentStatus status;
     public int price;
     public boolean isKitchenPart;
+    public ApartmentAddressDTO apartmentAddress;
+    public List<ApartmentFile> apartmentFiles;
+    public String mainFile;
     public String description;
     public UserDataDTO user;
-    public List<ApartmentFile> apartmentFiles;
-    public LocalDateTime created_at;
-    public LocalDateTime updated_at;
 }
