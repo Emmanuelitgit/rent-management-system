@@ -25,7 +25,7 @@ public class ApartmentDTOMapper {
                 apartment.getBathrooms(),
                 apartment.getStatus(),
                 apartment.getPrice(),
-                apartment.isKitchenPart,
+                apartment.getIsKitchenPart(),
                 new ApartmentAddressDTO(
                         apartment.getApartmentAddress().getId(),
                         apartment.getApartmentAddress().getCity(),

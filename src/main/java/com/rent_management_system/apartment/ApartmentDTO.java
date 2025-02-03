@@ -21,7 +21,7 @@ public class ApartmentDTO {
     public int bathrooms;
     public ApartmentStatus status;
     public int price;
-    public boolean isKitchenPart;
+    public int isKitchenPart;
     public ApartmentAddressDTO apartmentAddress;
     public List<ApartmentFile> apartmentFiles;
     public String mainFile;

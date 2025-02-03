@@ -33,7 +33,7 @@ public class Apartment {
     @NotNull(message = "Number of bath rooms is required")
     public int bathrooms;
     public int price;
-    public boolean isKitchenPart;
+    public int isKitchenPart;
     @Enumerated(EnumType.STRING)
     public ApartmentStatus status;
     public String description;

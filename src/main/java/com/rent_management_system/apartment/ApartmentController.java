@@ -46,7 +46,7 @@ public class ApartmentController {
             @RequestParam("bedrooms") int bedrooms,
             @RequestParam("bathrooms") int bathrooms,
             @RequestParam("price") int price,
-            @RequestParam("isKitchenPart") boolean isKitchenPart,
+            @RequestParam("isKitchenPart") int isKitchenPart,
             @RequestParam("status") ApartmentStatus status,
             @RequestParam("additionalFiles") MultipartFile[] subFiles,
             @RequestParam("mainFile") MultipartFile mainFile,
@@ -64,7 +64,7 @@ public class ApartmentController {
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
         apartment.setStatus(status);
-        apartment.setKitchenPart(isKitchenPart);
+        apartment.setIsKitchenPart(isKitchenPart);
         apartment.setPrice(price);
         apartment.setDescription(description);
 
@@ -74,6 +74,7 @@ public class ApartmentController {
         apartmentAddress.setCity(city);
 
         ApartmentDTO apartmentDTO = apartmentService.createApartment(apartment, userId, mainFile, subFiles, apartmentAddress);
+        log.info("apartment created successfully:===========");
         return ResponseHandler.responseBuilder("Apartment created successfully", apartmentDTO, HttpStatus.CREATED);
     }
 
@@ -104,7 +105,7 @@ public class ApartmentController {
             @RequestParam("bedrooms") int bedrooms,
             @RequestParam("bathrooms") int bathrooms,
             @RequestParam("price") int price,
-            @RequestParam("isKitchenPart") boolean isKitchenPart,
+            @RequestParam("isKitchenPart") int isKitchenPart,
             @RequestParam("status") ApartmentStatus status,
             @RequestParam("additionalFiles") MultipartFile[] subFiles,
             @RequestParam("mainFile") MultipartFile mainFile,
@@ -121,7 +122,7 @@ public class ApartmentController {
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
         apartment.setStatus(status);
-        apartment.setKitchenPart(isKitchenPart);
+        apartment.setIsKitchenPart(isKitchenPart);
         apartment.setPrice(price);
         apartment.setDescription(description);
 
