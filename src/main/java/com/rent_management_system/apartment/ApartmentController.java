@@ -148,5 +148,4 @@ public class ApartmentController {
         apartmentService.removeApartmentById(id);
         return ResponseHandler.responseBuilder("Apartment deleted successfully", null, HttpStatus.OK);
     }
-
 }

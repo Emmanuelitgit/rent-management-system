@@ -42,11 +42,11 @@ public class SecurityConfigurations {
             "/swagger-ui/**",
             "/configuration/**",
             "/swagger-resources/**",
-            "/swagger-ui.html/**",
-            "/api-docs/**",
+            "/swagger-ui.html",
+            "/v3/api-docs/**",
             "/webjars/**",
             "/assets/**",
-            "/static/**"
+            "/static/**",
     };
 
     /**
@@ -61,19 +61,13 @@ public class SecurityConfigurations {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(c -> c.configurationSource(corsConfiguration))
-                .authorizeHttpRequests(registry->{
+                .authorizeHttpRequests(registry -> {
                     registry
-
-                            .requestMatchers(SWAGGER_ENDPOINTS)
-                            .permitAll()
-//                            .requestMatchers(
-//                                    "/api/create-user",
-//                                    "/api/authenticate",
-//                                    "/api/verify-email",
-//                                    "/api/resend-otp",
-//                                    "/api/otp", "/api/users").permitAll()
-//                            .requestMatchers("/api/users").hasAnyRole("ADMIN")
-                            .anyRequest().permitAll();
+                            .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
+                            .requestMatchers(
+                                    "/auth/authenticate"
+                            ).permitAll()
+                            .anyRequest().authenticated();
                 })
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
                     httpSecurityExceptionHandlingConfigurer
