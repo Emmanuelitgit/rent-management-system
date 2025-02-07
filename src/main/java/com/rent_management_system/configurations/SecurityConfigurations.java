@@ -64,10 +64,7 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(registry -> {
                     registry
                             .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
-                            .requestMatchers(
-                                    "/auth/authenticate"
-                            ).permitAll()
-                            .anyRequest().authenticated();
+                            .anyRequest().permitAll();
                 })
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
                     httpSecurityExceptionHandlingConfigurer
