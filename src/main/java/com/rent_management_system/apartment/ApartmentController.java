@@ -106,7 +106,6 @@ public class ApartmentController {
             @RequestParam("bathrooms") int bathrooms,
             @RequestParam("price") int price,
             @RequestParam("isKitchenPart") int isKitchenPart,
-            @RequestParam("status") ApartmentStatus status,
             @RequestParam("additionalFiles") MultipartFile[] subFiles,
             @RequestParam("mainFile") MultipartFile mainFile,
             @RequestParam("city") String city,
@@ -121,7 +120,7 @@ public class ApartmentController {
         apartment.setName(name);
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
-        apartment.setStatus(status);
+        apartment.setStatus(ApartmentStatus.AVAILABLE);
         apartment.setIsKitchenPart(isKitchenPart);
         apartment.setPrice(price);
         apartment.setDescription(description);
