@@ -3,16 +3,14 @@ package com.rent_management_system.apartmentAddress;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rent_management_system.apartment.Apartment;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Setter
-@Getter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class ApartmentAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

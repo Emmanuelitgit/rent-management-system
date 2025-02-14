@@ -48,11 +48,11 @@ public class Apartment {
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
-    @ManyToMany(mappedBy = "apartment", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "apartment", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<RentInfo> rentInfo;
-    @OneToMany(mappedBy = "apartment",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = ApartmentFile.class, mappedBy = "apartment",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     public List<ApartmentFile> apartmentFiles;
-    @OneToOne(mappedBy = "apartment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = ApartmentAddress.class, mappedBy = "apartment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private ApartmentAddress apartmentAddress;
 }

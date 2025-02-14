@@ -19,8 +19,14 @@ public class ApartmentFile {
     private Long id;
     @Column
     public String file;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "apartment_id")
     @JsonIgnore
     public Apartment apartment;
+
+    @PrePersist
+    public void prePersist() {
+        this.apartment = getApartment();
+
+    }
 }

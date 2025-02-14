@@ -1,6 +1,7 @@
 package com.rent_management_system.apartment;
 
 import com.rent_management_system.apartmentAddress.ApartmentAddress;
+import com.rent_management_system.apartmentAddress.ApartmentAddressRepository;
 import com.rent_management_system.exception.NotFoundException;
 import com.rent_management_system.fileManager.ApartmentFile;
 import com.rent_management_system.fileManager.ApartmentFileRepository;
@@ -31,13 +32,15 @@ public class ApartmentService implements ApartmentServiceInterface {
     private final String FILE_BASEURL_PROD = "https://rent-management-system-uyyb.onrender.com/";
     private final String FILE_BASEURL_DEV = " http://localhost:5000/";
     private final String STORAGE = "uploads";
+    private final ApartmentAddressRepository apartmentAddressRepository;
 
     @Autowired
-    public ApartmentService(ApartmentRepository apartmentRepository, UserRepository userRepository, ApartmentDTOMapper apartmentDTOMapper, ApartmentFileRepository apartmentFileRepository) {
+    public ApartmentService(ApartmentRepository apartmentRepository, UserRepository userRepository, ApartmentDTOMapper apartmentDTOMapper, ApartmentFileRepository apartmentFileRepository, ApartmentAddressRepository apartmentAddressRepository) {
         this.apartmentRepository = apartmentRepository;
         this.userRepository = userRepository;
         this.apartmentDTOMapper = apartmentDTOMapper;
         this.apartmentFileRepository = apartmentFileRepository;
+        this.apartmentAddressRepository = apartmentAddressRepository;
     }
 
     /**
@@ -58,15 +61,11 @@ public class ApartmentService implements ApartmentServiceInterface {
 
          List<ApartmentFile> apartmentFiles = new ArrayList<>();
 
-         saveFiles(files);
-         saveFile(mainFile);
-
          for (MultipartFile filePayload : files) {
              ApartmentFile apartmentFile = new ApartmentFile();
              apartmentFile.setFile(FILE_BASEURL_DEV+filePayload.getOriginalFilename());
              apartmentFile.setApartment(apartment);
              apartmentFiles.add(apartmentFile);
-             apartmentFileRepository.save(apartmentFile);
          }
 
          apartment.setApartmentFiles(apartmentFiles);
@@ -76,8 +75,12 @@ public class ApartmentService implements ApartmentServiceInterface {
          apartmentAddress.setApartment(apartment);
 
          User user = userOptional.get();
-         apartment.setUser(user);
          user.getApartment().add(apartment);
+         apartment.setUser(user);
+         userRepository.save(user);
+
+         saveFiles(files);
+         saveFile(mainFile);
 
          return ApartmentDTOMapper.toDTO(apartment);
      }

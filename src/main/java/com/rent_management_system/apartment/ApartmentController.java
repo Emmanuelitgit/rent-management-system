@@ -115,7 +115,7 @@ public class ApartmentController {
             @PathVariable Long id
     ) throws IOException {
 
-        log.info("In update user by ID method:============");
+        log.info("In update apartment by ID method:============");
         apartment.setName(name);
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
