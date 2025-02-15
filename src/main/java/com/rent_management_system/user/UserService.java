@@ -78,7 +78,7 @@ public class UserService implements UserInterface {
         user.setRole(user.getRole().toUpperCase());
         OTP otpDetails = otpDetails(user);
         user.setOtp(otpDetails);
-//        otpComponent.sendOTP(user.getEmail(), otpDetails.getOtp(), user.getFirstName());
+        otpComponent.sendOTP(user.getEmail(), otpDetails.getOtp(), user.getFirstName());
         userRepository.save(user);
         return UserDTOMapper.toDTO(user);
     }

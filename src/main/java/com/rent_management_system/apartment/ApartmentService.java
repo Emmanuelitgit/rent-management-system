@@ -243,26 +243,3 @@ public class ApartmentService implements ApartmentServiceInterface {
         }
     }
 }
-
-
-
-//        Optional<List<ApartmentFile>> apartmentFileOptional = apartmentFileRepository
-//                .findApartmentFilesByApartment_Id(apartmentOptional.get().getId());
-//
-//        if (apartmentFileOptional.isEmpty()){
-//            throw new NotFoundException("Apartment file not found");
-//        }
-//
-//        saveFiles(files);
-//        saveFile(mainFile);
-//
-//        List<ApartmentFile> apartmentFiles = new ArrayList<>();
-//
-//        for (MultipartFile filePayload : files) {
-//            List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.get();
-//            for (ApartmentFile apartmentFile:existingApartmentFiles){
-//                apartmentFile.setFile(FILE_BASEURL_DEV+filePayload.getOriginalFilename());
-//                apartmentFile.setApartment(apartment);
-//                apartmentFiles.add(apartmentFile);
-//            }
-//        }

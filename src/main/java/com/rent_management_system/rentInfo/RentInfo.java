@@ -39,7 +39,7 @@ public class RentInfo {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<Apartment> apartment;
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     public Payment payment;
 }

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class User {
     @Schema(description = "enter email address here", example = "eyidana001@gmail.com")
     public String email;
     @Column
-//    @NotNull(message = "phone number is required")
+    @NotNull(message = "phone number is required")
     @Schema(description = "enter phone number here", example = "0597893082")
     public Long phone;
     @Column(columnDefinition = "varchar(255) default 'USER'")
@@ -58,7 +59,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<RentInfo> rentInfo;
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonIgnore
     public List<Payment> payment;
 }
