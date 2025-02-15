@@ -132,45 +132,67 @@ public class ApartmentService implements ApartmentServiceInterface {
     @Override
     @Transactional
     public ApartmentDTO updateApartmentById(Apartment apartment, MultipartFile mainFile, MultipartFile[] files, Long id, ApartmentAddress apartmentAddress) throws IOException {
+
+        // retrieving existing apartment data from the db. throw exception it does not exist
         Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
         if (apartmentOptional.isEmpty()){
             throw new NotFoundException("Apartment not found");
         }
 
+        // retrieving existing apartment address data from the db. throw exception it does not exist
+        Optional<ApartmentAddress> apartmentAddressOptional = apartmentAddressRepository
+                .findById(apartmentOptional.get().getApartmentAddress().getId());
+        if (apartmentAddressOptional.isEmpty()){
+            throw new NotFoundException("Apartment address not found");
+        }
+
+        // retrieving existing apartment files  from the db. throw exception it does not exist
         Optional<List<ApartmentFile>> apartmentFileOptional = apartmentFileRepository
                 .findApartmentFilesByApartment_Id(apartmentOptional.get().getId());
-
         if (apartmentFileOptional.isEmpty()){
             throw new NotFoundException("Apartment file not found");
         }
 
-        saveFiles(files);
-        saveFile(mainFile);
-
-        List<ApartmentFile> apartmentFiles = new ArrayList<>();
-
-        for (MultipartFile filePayload : files) {
-            List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.get();
-            for (ApartmentFile apartmentFile:existingApartmentFiles){
-                apartmentFile.setFile(FILE_BASEURL_DEV+filePayload.getOriginalFilename());
-                apartmentFiles.add(apartmentFile);
-            }
-        }
-
+        // updating existing apartment details
         Apartment existingApartment = apartmentOptional.get();
         existingApartment.setName(apartment.getName());
         existingApartment.setBathrooms(apartment.getBathrooms());
         existingApartment.setBedrooms(apartment.getBedrooms());
         existingApartment.setDescription(apartment.getDescription());
         existingApartment.setStatus(apartment.getStatus());
+        existingApartment.setIsKitchenPart(apartment.getIsKitchenPart());
+        existingApartment.setMainFile(FILE_BASEURL_DEV+mainFile.getOriginalFilename());
 
+        // updating existing apartment address
+        ApartmentAddress existingApartmentAddress = apartmentAddressOptional.get();
+        existingApartmentAddress.setApartment(existingApartment);
+        existingApartmentAddress.setStreetAddress(apartmentAddress.getStreetAddress());
+        existingApartmentAddress.setGpsAddress(apartmentAddress.getGpsAddress());
+        existingApartmentAddress.setRegion(apartmentAddress.getRegion());
+        existingApartmentAddress.setCity(apartmentAddress.getCity());
+
+
+        // looping through existing and incoming files
+        List<ApartmentFile> apartmentFiles = new ArrayList<>();
+        for (MultipartFile filePayload : files) {
+            List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.get();
+            for (ApartmentFile apartmentFile:existingApartmentFiles){
+                apartmentFile.setFile(FILE_BASEURL_DEV+filePayload.getOriginalFilename());
+                apartmentFile.setApartment(existingApartment);
+                apartmentFiles.add(apartmentFile);
+            }
+        }
+        // adding the updated files to existing apartment
         existingApartment.setApartmentFiles(apartmentFiles);
-        existingApartment.setMainFile(mainFile.getOriginalFilename());
 
-        apartment.setApartmentAddress(apartmentAddress);
-        apartmentAddress.setApartment(apartment);
+        // adding the updated apartment address to existing apartment
+        existingApartment.setApartmentAddress(existingApartmentAddress);
 
+        // saving the updated apartment
         apartmentRepository.save(existingApartment);
+
+        saveFiles(files);
+        saveFile(mainFile);
 
         return ApartmentDTOMapper.toDTO(existingApartment);
 
@@ -221,3 +243,26 @@ public class ApartmentService implements ApartmentServiceInterface {
         }
     }
 }
+
+
+
+//        Optional<List<ApartmentFile>> apartmentFileOptional = apartmentFileRepository
+//                .findApartmentFilesByApartment_Id(apartmentOptional.get().getId());
+//
+//        if (apartmentFileOptional.isEmpty()){
+//            throw new NotFoundException("Apartment file not found");
+//        }
+//
+//        saveFiles(files);
+//        saveFile(mainFile);
+//
+//        List<ApartmentFile> apartmentFiles = new ArrayList<>();
+//
+//        for (MultipartFile filePayload : files) {
+//            List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.get();
+//            for (ApartmentFile apartmentFile:existingApartmentFiles){
+//                apartmentFile.setFile(FILE_BASEURL_DEV+filePayload.getOriginalFilename());
+//                apartmentFile.setApartment(apartment);
+//                apartmentFiles.add(apartmentFile);
+//            }
+//        }
