@@ -10,6 +10,7 @@ import com.rent_management_system.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,8 +30,10 @@ public class ApartmentService implements ApartmentServiceInterface {
     private final UserRepository userRepository;
     private final ApartmentDTOMapper apartmentDTOMapper;
     private final ApartmentFileRepository apartmentFileRepository;
-    private final String FILE_BASEURL_PROD = "https://rent-management-system-uyyb.onrender.com/";
-    private final String FILE_BASEURL_DEV = " http://localhost:5000/";
+    @Value("${FILE_BASEURL_PROD}")
+    String FILE_BASEURL_PROD;
+//    @Value("${FILE_BASEURL_DEV}")
+//    String FILE_BASEURL_DEV;
     private final String STORAGE = "uploads";
     private final ApartmentAddressRepository apartmentAddressRepository;
 
@@ -63,13 +66,13 @@ public class ApartmentService implements ApartmentServiceInterface {
 
          for (MultipartFile filePayload : files) {
              ApartmentFile apartmentFile = new ApartmentFile();
-             apartmentFile.setFile(FILE_BASEURL_DEV+filePayload.getOriginalFilename());
+             apartmentFile.setFile(FILE_BASEURL_PROD+filePayload.getOriginalFilename());
              apartmentFile.setApartment(apartment);
              apartmentFiles.add(apartmentFile);
          }
 
          apartment.setApartmentFiles(apartmentFiles);
-         apartment.setMainFile(FILE_BASEURL_DEV+mainFile.getOriginalFilename());
+         apartment.setMainFile(FILE_BASEURL_PROD+mainFile.getOriginalFilename());
 
          apartment.setApartmentAddress(apartmentAddress);
          apartmentAddress.setApartment(apartment);
@@ -123,6 +126,28 @@ public class ApartmentService implements ApartmentServiceInterface {
 
     /**
      * @auther Emmanuel Yidana
+     * @description: A method to get apartment by user id
+     * @date 17-02-2025
+     * @param: id
+     * @throws NotFoundException- throws NotFoundException if apartment does not exist
+     * @return apartment object
+     */
+    @Override
+    @Transactional
+    public List<ApartmentDTO> getApartmentByUserId(Long id) {
+        Optional<List<Apartment>> apartmentOptional = apartmentRepository.findApartmentByUser_Id(id);
+        if (apartmentOptional.isEmpty()){
+            throw new NotFoundException("Apartment not found");
+        }
+        List<Apartment> apartments = apartmentOptional.get();
+        if(apartments.isEmpty()){
+            throw new NotFoundException("Apartment not found");
+        }
+        return apartmentDTOMapper.apartmentDTOList(apartments);
+    }
+
+    /**
+     * @auther Emmanuel Yidana
      * @description: A method to update apartment by id
      * @date 016-01-2025
      * @param: id, apartment object
@@ -161,7 +186,7 @@ public class ApartmentService implements ApartmentServiceInterface {
         existingApartment.setDescription(apartment.getDescription());
         existingApartment.setStatus(apartment.getStatus());
         existingApartment.setIsKitchenPart(apartment.getIsKitchenPart());
-        existingApartment.setMainFile(FILE_BASEURL_DEV+mainFile.getOriginalFilename());
+        existingApartment.setMainFile(FILE_BASEURL_PROD+mainFile.getOriginalFilename());
 
         // updating existing apartment address
         ApartmentAddress existingApartmentAddress = apartmentAddressOptional.get();
@@ -177,7 +202,7 @@ public class ApartmentService implements ApartmentServiceInterface {
         for (MultipartFile filePayload : files) {
             List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.get();
             for (ApartmentFile apartmentFile:existingApartmentFiles){
-                apartmentFile.setFile(FILE_BASEURL_DEV+filePayload.getOriginalFilename());
+                apartmentFile.setFile(FILE_BASEURL_PROD+filePayload.getOriginalFilename());
                 apartmentFile.setApartment(existingApartment);
                 apartmentFiles.add(apartmentFile);
             }

@@ -79,6 +79,20 @@ public class ApartmentController {
 
     /**
      * @auther Emmanuel Yidana
+     * @description A method to get apartment by property owner id
+     * @date 17-02-2025.
+     * @param: id
+     * @return apartment object
+     */
+    @GetMapping("/apartment/property-owner/{userId}")
+    public ResponseEntity<Object> getApartmentByUserId(@PathVariable Long userId){
+        log.info("In get apartment by user id==========");
+        List<ApartmentDTO> apartmentDTO = apartmentService.getApartmentByUserId(userId);
+        return ResponseHandler.responseBuilder("Apartment details", apartmentDTO, HttpStatus.OK);
+    }
+
+    /**
+     * @auther Emmanuel Yidana
      * @description A method to get apartment by id
      * @date 016-01-2025.
      * @param: id
