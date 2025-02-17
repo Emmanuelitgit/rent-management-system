@@ -2,6 +2,7 @@ package com.rent_management_system.apartment;
 
 import com.rent_management_system.apartmentAddress.ApartmentAddress;
 import com.rent_management_system.apartmentAddress.ApartmentAddressRepository;
+import com.rent_management_system.components.ProfileNameProvider;
 import com.rent_management_system.exception.NotFoundException;
 import com.rent_management_system.fileManager.ApartmentFile;
 import com.rent_management_system.fileManager.ApartmentFileRepository;
@@ -30,19 +31,17 @@ public class ApartmentService implements ApartmentServiceInterface {
     private final UserRepository userRepository;
     private final ApartmentDTOMapper apartmentDTOMapper;
     private final ApartmentFileRepository apartmentFileRepository;
-    @Value("${FILE_BASEURL_PROD}")
-    String FILE_BASEURL_PROD;
-//    @Value("${FILE_BASEURL_DEV}")
-//    String FILE_BASEURL_DEV;
+    private final ProfileNameProvider profileNameProvider;
     private final String STORAGE = "uploads";
     private final ApartmentAddressRepository apartmentAddressRepository;
 
     @Autowired
-    public ApartmentService(ApartmentRepository apartmentRepository, UserRepository userRepository, ApartmentDTOMapper apartmentDTOMapper, ApartmentFileRepository apartmentFileRepository, ApartmentAddressRepository apartmentAddressRepository) {
+    public ApartmentService(ApartmentRepository apartmentRepository, UserRepository userRepository, ApartmentDTOMapper apartmentDTOMapper, ApartmentFileRepository apartmentFileRepository, ProfileNameProvider profileNameProvider, ApartmentAddressRepository apartmentAddressRepository) {
         this.apartmentRepository = apartmentRepository;
         this.userRepository = userRepository;
         this.apartmentDTOMapper = apartmentDTOMapper;
         this.apartmentFileRepository = apartmentFileRepository;
+        this.profileNameProvider = profileNameProvider;
         this.apartmentAddressRepository = apartmentAddressRepository;
     }
 
@@ -66,13 +65,13 @@ public class ApartmentService implements ApartmentServiceInterface {
 
          for (MultipartFile filePayload : files) {
              ApartmentFile apartmentFile = new ApartmentFile();
-             apartmentFile.setFile(FILE_BASEURL_PROD+filePayload.getOriginalFilename());
+             apartmentFile.setFile(profileNameProvider.getFilePropertyPath()+filePayload.getOriginalFilename());
              apartmentFile.setApartment(apartment);
              apartmentFiles.add(apartmentFile);
          }
 
          apartment.setApartmentFiles(apartmentFiles);
-         apartment.setMainFile(FILE_BASEURL_PROD+mainFile.getOriginalFilename());
+         apartment.setMainFile(profileNameProvider.getFilePropertyPath()+mainFile.getOriginalFilename());
 
          apartment.setApartmentAddress(apartmentAddress);
          apartmentAddress.setApartment(apartment);
@@ -186,7 +185,7 @@ public class ApartmentService implements ApartmentServiceInterface {
         existingApartment.setDescription(apartment.getDescription());
         existingApartment.setStatus(apartment.getStatus());
         existingApartment.setIsKitchenPart(apartment.getIsKitchenPart());
-        existingApartment.setMainFile(FILE_BASEURL_PROD+mainFile.getOriginalFilename());
+        existingApartment.setMainFile(profileNameProvider.getFilePropertyPath()+mainFile.getOriginalFilename());
 
         // updating existing apartment address
         ApartmentAddress existingApartmentAddress = apartmentAddressOptional.get();
@@ -202,7 +201,7 @@ public class ApartmentService implements ApartmentServiceInterface {
         for (MultipartFile filePayload : files) {
             List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.get();
             for (ApartmentFile apartmentFile:existingApartmentFiles){
-                apartmentFile.setFile(FILE_BASEURL_PROD+filePayload.getOriginalFilename());
+                apartmentFile.setFile(profileNameProvider.getFilePropertyPath()+filePayload.getOriginalFilename());
                 apartmentFile.setApartment(existingApartment);
                 apartmentFiles.add(apartmentFile);
             }
