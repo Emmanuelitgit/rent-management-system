@@ -247,7 +247,8 @@ public class ApartmentService implements ApartmentServiceInterface {
 
 
     private void saveFile(MultipartFile file) throws IOException {
-        File fileData = new File(STORAGE + File.separator + file.getOriginalFilename());
+        String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        File fileData = new File(STORAGE + File.separator + uniqueFileName);
         File uploadsDir = new File(STORAGE);
         if (!uploadsDir.exists()) {
             uploadsDir.mkdirs();
@@ -258,7 +259,8 @@ public class ApartmentService implements ApartmentServiceInterface {
 
     private void saveFiles(MultipartFile[] files) throws IOException {
         for(MultipartFile file:files){
-            File fileData = new File(STORAGE + File.separator + file.getOriginalFilename());
+            String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            File fileData = new File(STORAGE + File.separator + uniqueFileName);
             File uploadsDir = new File(STORAGE);
             if (!uploadsDir.exists()) {
                 uploadsDir.mkdirs();
