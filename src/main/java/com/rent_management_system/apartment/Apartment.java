@@ -2,14 +2,17 @@ package com.rent_management_system.apartment;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.rent_management_system.apartmentAddress.ApartmentAddress;
 import com.rent_management_system.fileManager.ApartmentFile;
+import com.rent_management_system.fileManager.MainFile;
 import com.rent_management_system.rentInfo.RentInfo;
 import com.rent_management_system.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -43,7 +46,6 @@ public class Apartment {
     @UpdateTimestamp
     public LocalDateTime updated_at;
 //    @NotNull(message = "main file cannot be null")
-    public String mainFile;
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
@@ -55,4 +57,7 @@ public class Apartment {
     public List<ApartmentFile> apartmentFiles;
     @OneToOne(targetEntity = ApartmentAddress.class, mappedBy = "apartment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private ApartmentAddress apartmentAddress;
+    @OneToOne(mappedBy = "apartment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private MainFile mainFile;
 }

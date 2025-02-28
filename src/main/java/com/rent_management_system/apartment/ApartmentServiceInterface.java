@@ -11,6 +11,6 @@ public interface ApartmentServiceInterface {
     public List<ApartmentDTO> getApartmentList();
     public ApartmentDTO getApartmentById(Long id);
     public ApartmentDTO updateApartmentById(Apartment apartment, MultipartFile mainFile, MultipartFile[] files,Long id, ApartmentAddress address) throws IOException;
-    public void removeApartmentById(Long id);
+    public void removeApartmentById(Long id) throws IOException;
     public List<ApartmentDTO> getApartmentByUserId(Long id);
 }

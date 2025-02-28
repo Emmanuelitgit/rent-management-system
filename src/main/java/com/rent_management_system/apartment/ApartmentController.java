@@ -156,7 +156,7 @@ public class ApartmentController {
      * @return ResponseEntity with null object
      */
     @DeleteMapping("/remove-apartment/{id}")
-    public ResponseEntity<Object> removeApartmentById(@PathVariable Long id){
+    public ResponseEntity<Object> removeApartmentById(@PathVariable Long id) throws IOException {
         apartmentService.removeApartmentById(id);
         return ResponseHandler.responseBuilder("Apartment deleted successfully", null, HttpStatus.OK);
     }

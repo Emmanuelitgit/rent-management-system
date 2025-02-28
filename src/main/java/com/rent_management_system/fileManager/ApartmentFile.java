@@ -18,7 +18,11 @@ public class ApartmentFile {
     @Column
     private Long id;
     @Column
-    public String file;
+    public String fileName;
+    @Column
+    public String fileId;
+    @Column
+    public String fileType;
     @ManyToOne
     @JoinColumn(name = "apartment_id")
     @JsonIgnore

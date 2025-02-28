@@ -4,8 +4,7 @@ import com.rent_management_system.apartmentAddress.ApartmentAddress;
 import com.rent_management_system.apartmentAddress.ApartmentAddressRepository;
 import com.rent_management_system.components.ProfileNameProvider;
 import com.rent_management_system.exception.NotFoundException;
-import com.rent_management_system.fileManager.ApartmentFile;
-import com.rent_management_system.fileManager.ApartmentFileRepository;
+import com.rent_management_system.fileManager.*;
 import com.rent_management_system.user.User;
 import com.rent_management_system.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -31,18 +30,23 @@ public class ApartmentService implements ApartmentServiceInterface {
     private final UserRepository userRepository;
     private final ApartmentDTOMapper apartmentDTOMapper;
     private final ApartmentFileRepository apartmentFileRepository;
+    private final MainFileRepository mainFileRepository;
     private final ProfileNameProvider profileNameProvider;
     private final String STORAGE = "uploads";
     private final ApartmentAddressRepository apartmentAddressRepository;
+    private final GoogleDriveService googleDriveService;
+    private final String GOOGLE_STORAGE_PATH = "https://drive.google.com/uc?id=";
 
     @Autowired
-    public ApartmentService(ApartmentRepository apartmentRepository, UserRepository userRepository, ApartmentDTOMapper apartmentDTOMapper, ApartmentFileRepository apartmentFileRepository, ProfileNameProvider profileNameProvider, ApartmentAddressRepository apartmentAddressRepository) {
+    public ApartmentService(ApartmentRepository apartmentRepository, UserRepository userRepository, ApartmentDTOMapper apartmentDTOMapper, ApartmentFileRepository apartmentFileRepository, ProfileNameProvider profileNameProvider, ApartmentAddressRepository apartmentAddressRepository, GoogleDriveService googleDriveService, MainFileRepository mainFileRepository) {
         this.apartmentRepository = apartmentRepository;
         this.userRepository = userRepository;
         this.apartmentDTOMapper = apartmentDTOMapper;
         this.apartmentFileRepository = apartmentFileRepository;
         this.profileNameProvider = profileNameProvider;
         this.apartmentAddressRepository = apartmentAddressRepository;
+        this.googleDriveService = googleDriveService;
+        this.mainFileRepository = mainFileRepository;
     }
 
     /**
@@ -55,7 +59,8 @@ public class ApartmentService implements ApartmentServiceInterface {
      */
      @Transactional
      @Override
-     public ApartmentDTO createApartment(Apartment apartment, Long userId, MultipartFile mainFile, MultipartFile[] files, ApartmentAddress apartmentAddress) throws IOException {
+     public ApartmentDTO createApartment(Apartment apartment, Long userId, MultipartFile mainFilePayload,
+                                         MultipartFile[] files, ApartmentAddress apartmentAddress) throws IOException {
          Optional<User> userOptional = userRepository.findById(userId);
          if (userOptional.isEmpty()) {
              throw new NotFoundException("User not found");
@@ -65,13 +70,23 @@ public class ApartmentService implements ApartmentServiceInterface {
 
          for (MultipartFile filePayload : files) {
              ApartmentFile apartmentFile = new ApartmentFile();
-             apartmentFile.setFile(profileNameProvider.getFilePropertyPath()+filePayload.getOriginalFilename());
+             String fileId = googleDriveService.uploadFile(filePayload);
+             apartmentFile.setFileName(GOOGLE_STORAGE_PATH+fileId);
+             apartmentFile.setFileId(fileId);
+             apartmentFile.setFileType(filePayload.getContentType());
              apartmentFile.setApartment(apartment);
              apartmentFiles.add(apartmentFile);
          }
 
+         // setting files here
          apartment.setApartmentFiles(apartmentFiles);
-         apartment.setMainFile(profileNameProvider.getFilePropertyPath()+mainFile.getOriginalFilename());
+         String mainFileId = googleDriveService.uploadFile(mainFilePayload);
+         MainFile mainFile = new MainFile();
+         mainFile.setFileName(GOOGLE_STORAGE_PATH+mainFileId);
+         mainFile.setFileType(mainFilePayload.getContentType());
+         mainFile.setFileId(mainFileId);
+         mainFile.setApartment(apartment);
+         apartment.setMainFile(mainFile);
 
          apartment.setApartmentAddress(apartmentAddress);
          apartmentAddress.setApartment(apartment);
@@ -80,9 +95,6 @@ public class ApartmentService implements ApartmentServiceInterface {
          user.getApartment().add(apartment);
          apartment.setUser(user);
          userRepository.save(user);
-
-         saveFiles(files);
-         saveFile(mainFile);
 
          return ApartmentDTOMapper.toDTO(apartment);
      }
@@ -185,7 +197,7 @@ public class ApartmentService implements ApartmentServiceInterface {
         existingApartment.setDescription(apartment.getDescription());
         existingApartment.setStatus(apartment.getStatus());
         existingApartment.setIsKitchenPart(apartment.getIsKitchenPart());
-        existingApartment.setMainFile(profileNameProvider.getFilePropertyPath()+mainFile.getOriginalFilename());
+//        existingApartment.setMainFile(profileNameProvider.getFilePropertyPath()+mainFile.getOriginalFilename());
 
         // updating existing apartment address
         ApartmentAddress existingApartmentAddress = apartmentAddressOptional.get();
@@ -201,7 +213,7 @@ public class ApartmentService implements ApartmentServiceInterface {
         for (MultipartFile filePayload : files) {
             List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.get();
             for (ApartmentFile apartmentFile:existingApartmentFiles){
-                apartmentFile.setFile(profileNameProvider.getFilePropertyPath()+filePayload.getOriginalFilename());
+                apartmentFile.setFileName(profileNameProvider.getFilePropertyPath()+filePayload.getOriginalFilename());
                 apartmentFile.setApartment(existingApartment);
                 apartmentFiles.add(apartmentFile);
             }
@@ -231,17 +243,34 @@ public class ApartmentService implements ApartmentServiceInterface {
      */
     @Override
     @Transactional
-    public void removeApartmentById(Long id) {
+    public void removeApartmentById(Long id) throws IOException {
         Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
         if (apartmentOptional.isEmpty()){
             throw new NotFoundException("Apartment not found");
         }
+        Optional<List<ApartmentFile>> apartmentFileOptional = apartmentFileRepository
+                .findApartmentFilesByApartment_Id(apartmentOptional.get().getId());
+        if (apartmentFileOptional.isEmpty()){
+            throw new NotFoundException("apartment file not found");
+        }
+        Optional<MainFile> mainFileOptional = mainFileRepository.findMainFileByApartment_Id(apartmentOptional.get().getId());
+        if (mainFileOptional.isEmpty()){
+            throw new NotFoundException("no main file found");
+        }
+        MainFile mainFile = mainFileOptional.get();
+        List<ApartmentFile> apartmentFiles = apartmentFileOptional.get();
         Apartment apartment = apartmentOptional.get();
 
         User user = apartment.getUser();
         if (user != null){
             user.setApartment(null);
         }
+
+        for (ApartmentFile apartmentFile:apartmentFiles){
+            googleDriveService.removeFileById(apartmentFile.getFileId());
+        }
+        googleDriveService.removeFileById(mainFileOptional.get().getFileId());
+
         apartmentRepository.deleteById(id);
     }
 
