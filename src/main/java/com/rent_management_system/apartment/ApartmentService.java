@@ -18,9 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -165,31 +163,31 @@ public class ApartmentService implements ApartmentServiceInterface {
      * @throws NotFoundException- throws NotFoundException if apartment does not exist
      * @return updated apartment object
      */
+
     @Override
     @Transactional
     public ApartmentDTO updateApartmentById(Apartment apartment, MultipartFile mainFile, MultipartFile[] files, Long id, ApartmentAddress apartmentAddress) throws IOException {
-
-        // retrieving existing apartment data from the db. throw exception it does not exist
+        // Retrieve existing apartment
         Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
-        if (apartmentOptional.isEmpty()){
+        if (apartmentOptional.isEmpty()) {
             throw new NotFoundException("Apartment not found");
         }
 
-        // retrieving existing apartment address data from the db. throw exception it does not exist
+        // Retrieve existing apartment address
         Optional<ApartmentAddress> apartmentAddressOptional = apartmentAddressRepository
                 .findById(apartmentOptional.get().getApartmentAddress().getId());
-        if (apartmentAddressOptional.isEmpty()){
+        if (apartmentAddressOptional.isEmpty()) {
             throw new NotFoundException("Apartment address not found");
         }
 
-        // retrieving existing apartment files  from the db. throw exception it does not exist
+        // Retrieve existing apartment files
         Optional<List<ApartmentFile>> apartmentFileOptional = apartmentFileRepository
                 .findApartmentFilesByApartment_Id(apartmentOptional.get().getId());
-        if (apartmentFileOptional.isEmpty()){
-            throw new NotFoundException("Apartment file not found");
-        }
 
-        // updating existing apartment details
+        // Get existing files (if available)
+        List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.orElse(new ArrayList<>());
+
+        // Update apartment details
         Apartment existingApartment = apartmentOptional.get();
         existingApartment.setName(apartment.getName());
         existingApartment.setBathrooms(apartment.getBathrooms());
@@ -197,9 +195,8 @@ public class ApartmentService implements ApartmentServiceInterface {
         existingApartment.setDescription(apartment.getDescription());
         existingApartment.setStatus(apartment.getStatus());
         existingApartment.setIsKitchenPart(apartment.getIsKitchenPart());
-//        existingApartment.setMainFile(profileNameProvider.getFilePropertyPath()+mainFile.getOriginalFilename());
 
-        // updating existing apartment address
+        // Update apartment address
         ApartmentAddress existingApartmentAddress = apartmentAddressOptional.get();
         existingApartmentAddress.setApartment(existingApartment);
         existingApartmentAddress.setStreetAddress(apartmentAddress.getStreetAddress());
@@ -207,32 +204,35 @@ public class ApartmentService implements ApartmentServiceInterface {
         existingApartmentAddress.setRegion(apartmentAddress.getRegion());
         existingApartmentAddress.setCity(apartmentAddress.getCity());
 
-
-        // looping through existing and incoming files
+        // Ensure apartment files are updated correctly
         List<ApartmentFile> apartmentFiles = new ArrayList<>();
-        for (MultipartFile filePayload : files) {
-            List<ApartmentFile> existingApartmentFiles = apartmentFileOptional.get();
-            for (ApartmentFile apartmentFile:existingApartmentFiles){
-                apartmentFile.setFileName(profileNameProvider.getFilePropertyPath()+filePayload.getOriginalFilename());
-                apartmentFile.setApartment(existingApartment);
-                apartmentFiles.add(apartmentFile);
-            }
-        }
-        // adding the updated files to existing apartment
-        existingApartment.setApartmentFiles(apartmentFiles);
+        Iterator<MultipartFile> fileIterator = Arrays.asList(files).iterator();
+        Iterator<ApartmentFile> existingFileIterator = existingApartmentFiles.iterator();
 
-        // adding the updated apartment address to existing apartment
+        // Update existing files (if possible)
+        while (fileIterator.hasNext() && existingFileIterator.hasNext()) {
+            MultipartFile filePayload = fileIterator.next();
+            ApartmentFile apartmentFile = existingFileIterator.next();
+
+            String updatedFileId = googleDriveService.updateFileById(apartmentFile.getFileId(), filePayload);
+            apartmentFile.setFileId(updatedFileId);
+            apartmentFile.setFileType(filePayload.getContentType());
+            apartmentFile.setFileName(GOOGLE_STORAGE_PATH + updatedFileId);
+            apartmentFile.setApartment(existingApartment);
+
+            apartmentFiles.add(apartmentFile);
+        }
+
+        // Set updated files
+        existingApartment.setApartmentFiles(apartmentFiles);
         existingApartment.setApartmentAddress(existingApartmentAddress);
 
-        // saving the updated apartment
+        // Save updated apartment
         apartmentRepository.save(existingApartment);
 
-        saveFiles(files);
-        saveFile(mainFile);
-
         return ApartmentDTOMapper.toDTO(existingApartment);
-
     }
+
 
     /**
      * @auther Emmanuel Yidana
@@ -275,26 +275,26 @@ public class ApartmentService implements ApartmentServiceInterface {
     }
 
 
-    private void saveFile(MultipartFile file) throws IOException {
-        String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        File fileData = new File(STORAGE + File.separator + uniqueFileName);
-        File uploadsDir = new File(STORAGE);
-        if (!uploadsDir.exists()) {
-            uploadsDir.mkdirs();
-        }
-        Files.copy(file.getInputStream(), fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-    }
-
-    private void saveFiles(MultipartFile[] files) throws IOException {
-        for(MultipartFile file:files){
-            String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            File fileData = new File(STORAGE + File.separator + uniqueFileName);
-            File uploadsDir = new File(STORAGE);
-            if (!uploadsDir.exists()) {
-                uploadsDir.mkdirs();
-            }
-            Files.copy(file.getInputStream(), fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        }
-    }
+//    private void saveFile(MultipartFile file) throws IOException {
+//        String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+//        File fileData = new File(STORAGE + File.separator + uniqueFileName);
+//        File uploadsDir = new File(STORAGE);
+//        if (!uploadsDir.exists()) {
+//            uploadsDir.mkdirs();
+//        }
+//        Files.copy(file.getInputStream(), fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//
+//    }
+//
+//    private void saveFiles(MultipartFile[] files) throws IOException {
+//        for(MultipartFile file:files){
+//            String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+//            File fileData = new File(STORAGE + File.separator + uniqueFileName);
+//            File uploadsDir = new File(STORAGE);
+//            if (!uploadsDir.exists()) {
+//                uploadsDir.mkdirs();
+//            }
+//            Files.copy(file.getInputStream(), fileData.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//        }
+//    }
 }

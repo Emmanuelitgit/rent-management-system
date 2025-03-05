@@ -4,6 +4,7 @@ import com.rent_management_system.filters.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @Configuration
+@EnableJpaAuditing(auditorAwareRef = "auditorAware")
 public class SecurityConfigurations {
 
     private final UserDetailsService userDetailsService;
@@ -100,5 +102,10 @@ public class SecurityConfigurations {
     @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuditorAwareImpl auditorAware(){
+        return new AuditorAwareImpl();
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.rent_management_system.apartmentAddress.ApartmentAddress;
+import com.rent_management_system.configurations.Auditable;
 import com.rent_management_system.fileManager.ApartmentFile;
 import com.rent_management_system.fileManager.MainFile;
 import com.rent_management_system.rentInfo.RentInfo;
@@ -25,7 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "apartment_tb")
-public class Apartment {
+public class Apartment extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long id;
@@ -40,12 +41,6 @@ public class Apartment {
     @Enumerated(EnumType.STRING)
     public ApartmentStatus status;
     public String description;
-    @UpdateTimestamp
-    @Column(updatable = false)
-    public LocalDateTime created_at;
-    @UpdateTimestamp
-    public LocalDateTime updated_at;
-//    @NotNull(message = "main file cannot be null")
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
