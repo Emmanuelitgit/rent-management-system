@@ -39,7 +39,6 @@ public class GoogleDriveService {
         System.out.println("Google Drive Folder ID: " + FOLDER_ID);
     }
 
-
     private Drive driveService;
 
     public GoogleDriveService() throws GeneralSecurityException, IOException {
