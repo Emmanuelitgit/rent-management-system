@@ -49,23 +49,14 @@ public class GoogleDriveService {
     }
 
     private GoogleCredentials getCredentials() throws IOException {
-        // Get the JSON string from environment variables
-        String credentialsJson = System.getenv("GOOGLE_CREDENTIALS_JSON");
+        String credentialsPath = "/etc/secrets/GOOGLE_CREDENTIALS_PATH";
 
-        if (credentialsJson == null || credentialsJson.isEmpty()) {
-            throw new IllegalStateException("GOOGLE_CREDENTIALS_JSON environment variable is not set.");
-        }
-
-        // Create a temporary file to store the credentials
-        Path tempFilePath = Files.createTempFile("gcp-credentials", ".json");
-        Files.write(tempFilePath, credentialsJson.getBytes(), StandardOpenOption.WRITE);
-
-        // Load credentials from the temporary file
-        try (InputStream serviceAccountStream = Files.newInputStream(tempFilePath)) {
+        try (InputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
             return GoogleCredentials.fromStream(serviceAccountStream)
-                    .createScoped(Collections.singleton("https://www.googleapis.com/auth/drive"));
+                    .createScoped(Collections.singleton(DriveScopes.DRIVE));
         }
     }
+
 
 //    private GoogleCredentials getCredentials() throws IOException {
 //        ClassLoader classLoader = getClass().getClassLoader();
