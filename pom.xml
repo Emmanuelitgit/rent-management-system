@@ -228,7 +228,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.rent_management_system.MainApplication</mainClass>
+							<mainClass>com.rent_management_system.RentManagementSystemApplication</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -236,15 +236,5 @@
 		</plugins>
 	</build>
 
-
-
-	<!--	<build>-->
-<!--		<plugins>-->
-<!--			<plugin>-->
-<!--				<groupId>org.springframework.boot</groupId>-->
-<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--			</plugin>-->
-<!--		</plugins>-->
-<!--	</build>-->
 
 </project>
