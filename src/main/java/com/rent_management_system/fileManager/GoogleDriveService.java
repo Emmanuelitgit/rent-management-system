@@ -11,7 +11,9 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.rent_management_system.components.ProfileNameProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +32,9 @@ public class GoogleDriveService {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String GOOGLE_CREDENTIALS_PATH = System.getenv("GOOGLE_CREDENTIALS_PATH");
     private static final String FOLDER_ID = System.getenv("FOLDER_ID");
+    private final ProfileNameProvider profileNameProvider;
+    private Drive driveService;
+
 
     public static void main(String[] args) {
         if (FOLDER_ID == null) {
@@ -39,47 +44,37 @@ public class GoogleDriveService {
         System.out.println("Google Drive Folder ID: " + FOLDER_ID);
     }
 
-    private Drive driveService;
 
-    public GoogleDriveService() throws GeneralSecurityException, IOException {
+    public GoogleDriveService(ProfileNameProvider profileNameProvider) throws GeneralSecurityException, IOException {
+        this.profileNameProvider = profileNameProvider;
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         this.driveService = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpCredentialsAdapter(getCredentials()))
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
 
-    private GoogleCredentials getCredentials() throws IOException {
-        String credentialsPath = "/etc/secrets/GOOGLE_CREDENTIALS_PATH";
 
-        try (InputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
-            return GoogleCredentials.fromStream(serviceAccountStream)
-                    .createScoped(Collections.singleton(DriveScopes.DRIVE));
-        }
+    private GoogleCredentials getCredentials() throws IOException {
+       if (profileNameProvider.getActiveProfileName().equals("prod")){
+           String credentialsPath = "/etc/secrets/GOOGLE_CREDENTIALS_PATH";
+
+           try (InputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
+               return GoogleCredentials.fromStream(serviceAccountStream)
+                       .createScoped(Collections.singleton(DriveScopes.DRIVE));
+           }
+       }else {
+           ClassLoader classLoader = getClass().getClassLoader();
+           InputStream serviceAccountStream = classLoader.getResourceAsStream("credentials.json");
+
+           if (serviceAccountStream == null) {
+               throw new IllegalStateException("Could not find credentials.json in resources folder.");
+           }
+
+           return GoogleCredentials.fromStream(serviceAccountStream)
+                   .createScoped(Collections.singleton(DriveScopes.DRIVE));
+       }
     }
 
-
-//    private GoogleCredentials getCredentials() throws IOException {
-//        ClassLoader classLoader = getClass().getClassLoader();
-//        InputStream serviceAccountStream = classLoader.getResourceAsStream("credentials.json");
-//
-//        if (serviceAccountStream == null) {
-//            throw new IllegalStateException("Could not find credentials.json in resources folder.");
-//        }
-//
-//        return GoogleCredentials.fromStream(serviceAccountStream)
-//                .createScoped(Collections.singleton(DriveScopes.DRIVE));
-//    }
-
-
-//    private GoogleCredentials getCredentials() throws IOException {
-//        if (GOOGLE_CREDENTIALS_PATH == null || GOOGLE_CREDENTIALS_PATH.isEmpty()) {
-//            throw new IllegalStateException("GOOGLE_CREDENTIALS_PATH environment variable is not set.");
-//        }
-//
-//        InputStream serviceAccountStream = new FileInputStream(GOOGLE_CREDENTIALS_PATH);
-//        return GoogleCredentials.fromStream(serviceAccountStream)
-//                .createScoped(Collections.singleton(DriveScopes.DRIVE));
-//    }
 
     public String uploadFile(MultipartFile file) throws IOException {
         File fileMetadata = new File();
