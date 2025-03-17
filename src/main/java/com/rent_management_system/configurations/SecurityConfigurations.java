@@ -1,6 +1,7 @@
 package com.rent_management_system.configurations;
 
 import com.rent_management_system.filters.JWTAuthenticationFilter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -107,5 +108,10 @@ public class SecurityConfigurations {
     @Bean
     public AuditorAwareImpl auditorAware(){
         return new AuditorAwareImpl();
+    }
+
+    @Bean
+    ModelMapper modelMapper(){
+        return new ModelMapper();
     }
 }

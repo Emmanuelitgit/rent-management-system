@@ -21,10 +21,12 @@ import java.util.List;
 @RequestMapping("/api")
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -135,5 +137,12 @@ public class UserController {
         log.info("In update user by Id method:======");
         UserDTO userDTO = userService.updateUserById(id, user);
         return ResponseHandler.responseBuilder("User updated successfully", userDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-users")
+    public List<User> getAllUsers(@RequestParam(value = "firstname") String firstname,
+                                  @RequestParam(value = "lastname") String lastname){
+        List<User> users = userRepository.getAllUsers(firstname, lastname);
+        return users;
     }
 }

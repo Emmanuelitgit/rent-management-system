@@ -1,9 +1,11 @@
 package com.rent_management_system.apartment;
 
 import com.rent_management_system.apartmentAddress.ApartmentAddress;
+import com.rent_management_system.exception.NotFoundException;
 import com.rent_management_system.response.ResponseHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -20,10 +23,14 @@ public class ApartmentController {
     private final ApartmentService apartmentService;
     private final Apartment apartment = new Apartment();
     private final ApartmentAddress apartmentAddress = new ApartmentAddress();
+    private final ApartmentRepository apartmentRepository;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public ApartmentController(ApartmentService apartmentService) {
+    public ApartmentController(ApartmentService apartmentService, ApartmentRepository apartmentRepository, ModelMapper modelMapper) {
         this.apartmentService = apartmentService;
+        this.apartmentRepository = apartmentRepository;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/apartment-list")
@@ -159,5 +166,16 @@ public class ApartmentController {
     public ResponseEntity<Object> removeApartmentById(@PathVariable Long id) throws IOException {
         apartmentService.removeApartmentById(id);
         return ResponseHandler.responseBuilder("Apartment deleted successfully", null, HttpStatus.OK);
+    }
+
+    // just testing custom queries
+    @GetMapping("/get-apartments")
+    public Optional<List<Object>> getApartmentsWithUsers(@RequestParam("apartmentId") Long apartmentId){
+        Optional<List<Object>> apartments = apartmentRepository.getApartmentsWithUsers(apartmentId);
+        ApartmentResponse apartmentResponse = modelMapper.map(apartments, ApartmentResponse.class);
+        if (apartments.isEmpty()){
+            throw new NotFoundException("not found");
+        }
+        return apartments;
     }
 }
