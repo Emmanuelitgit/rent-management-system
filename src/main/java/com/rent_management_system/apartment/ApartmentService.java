@@ -33,7 +33,7 @@ public class ApartmentService implements ApartmentServiceInterface {
     private final String STORAGE = "uploads";
     private final ApartmentAddressRepository apartmentAddressRepository;
     private final GoogleDriveService googleDriveService;
-    private final String GOOGLE_STORAGE_PATH = "https://drive.google.com/uc?id=";
+    private final String GOOGLE_STORAGE_PATH = "https://drive.google.com/thumbnail?id=";
 
     @Autowired
     public ApartmentService(ApartmentRepository apartmentRepository, UserRepository userRepository, ApartmentDTOMapper apartmentDTOMapper, ApartmentFileRepository apartmentFileRepository, ProfileNameProvider profileNameProvider, ApartmentAddressRepository apartmentAddressRepository, GoogleDriveService googleDriveService, MainFileRepository mainFileRepository) {
