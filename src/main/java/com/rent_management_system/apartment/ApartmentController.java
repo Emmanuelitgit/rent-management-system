@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,6 +138,7 @@ public class ApartmentController {
     ) throws IOException {
 
         log.info("In update apartment by ID method:============");
+        log.info("additionalfiles:======{}", Arrays.toString(subFiles));
         apartment.setName(name);
         apartment.setBedrooms(bedrooms);
         apartment.setBathrooms(bathrooms);
